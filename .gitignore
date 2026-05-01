@@ -42,6 +42,10 @@ uploads/
 backend/uploads/
 **/uploads/
 
+# ML Models
+backend/overlap_model/
+overlap_model/
+
 # IDE & Editor Files
 .vscode/
 .idea/
