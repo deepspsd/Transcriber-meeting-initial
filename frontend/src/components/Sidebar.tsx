@@ -26,13 +26,36 @@ export default function Sidebar() {
   const tip = (label: string) => collapsed ? label : undefined
 
   return (
-    <aside className="sidebar">
+    <aside className="sidebar" style={{ position: 'relative' }}>
+      {/* Decorative corner tape */}
+      <div style={{
+        position: 'absolute',
+        top: '12px',
+        right: '-2px',
+        width: '40px',
+        height: '20px',
+        background: 'hsl(var(--sticky-yellow) / .6)',
+        border: '1.5px dashed hsl(var(--ink) / .3)',
+        transform: 'rotate(45deg)',
+        zIndex: 10,
+        pointerEvents: 'none'
+      }} />
+      
       {/* Logo */}
-      <div className="sidebar-logo">
-        <Zap size={20} fill="currentColor" style={{ color: 'var(--accent)', flexShrink: 0 }} />
+      <div className="sidebar-logo" style={{ position: 'relative' }}>
+        <Zap 
+          size={22} 
+          fill="currentColor" 
+          style={{ color: 'hsl(var(--accent))', flexShrink: 0 }} 
+          className="animate-float"
+        />
         {!collapsed && (
-          <span style={{ overflow: 'hidden', whiteSpace: 'nowrap' }}>
-            Voice<span style={{ color: 'var(--accent)' }}>Sum</span>
+          <span style={{ 
+            overflow: 'hidden', 
+            whiteSpace: 'nowrap',
+            fontSize: '1.7rem'
+          }}>
+            Voice<span style={{ color: 'hsl(var(--accent))' }}>Sum</span>
           </span>
         )}
       </div>
@@ -85,13 +108,43 @@ export default function Sidebar() {
 
       {/* User */}
       {!collapsed && (
-        <div style={{ padding: '.35rem 1rem', fontSize: '.75rem', color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-          {user?.name}
+        <div style={{ 
+          padding: '.5rem 1rem', 
+          fontSize: '.8rem', 
+          color: 'hsl(var(--pencil))', 
+          overflow: 'hidden', 
+          textOverflow: 'ellipsis', 
+          whiteSpace: 'nowrap',
+          fontFamily: 'Inter, sans-serif',
+          fontWeight: 500,
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px'
+        }}>
+          <div style={{
+            width: '28px',
+            height: '28px',
+            borderRadius: '50%',
+            background: 'hsl(var(--accent) / .2)',
+            border: '2px solid hsl(var(--accent))',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '.75rem',
+            fontWeight: 700,
+            color: 'hsl(var(--accent))',
+            flexShrink: 0
+          }}>
+            {user?.name?.charAt(0).toUpperCase()}
+          </div>
+          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            {user?.name}
+          </span>
         </div>
       )}
       <button
         className="nav-item"
-        style={{ color: 'var(--danger)' }}
+        style={{ color: 'hsl(var(--destructive))' }}
         onClick={() => { logout(); navigate('/login') }}
         title={tip('Logout')}
       >

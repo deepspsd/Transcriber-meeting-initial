@@ -1,4 +1,4 @@
-import { FileText, Lightbulb, CheckSquare, Users } from 'lucide-react'
+import { FileText, Lightbulb, CheckSquare, Users, Sparkles } from 'lucide-react'
 
 interface SummaryPanelProps {
   summary?: string
@@ -13,40 +13,150 @@ export default function SummaryPanel({ summary, keyPoints, actionItems, speakers
       <div
         className="glass"
         style={{
-          padding: '2rem',
+          padding: '3rem 2rem',
           textAlign: 'center',
-          color: 'var(--text-muted)',
+          color: 'hsl(var(--pencil))',
         }}
       >
-        <FileText size={32} style={{ margin: '0 auto 1rem', display: 'block', opacity: 0.4 }} />
-        <p>No summary available yet</p>
+        <FileText 
+          size={48} 
+          style={{ 
+            margin: '0 auto 1.5rem', 
+            display: 'block', 
+            opacity: 0.3,
+            color: 'hsl(var(--accent))'
+          }} 
+          className="animate-float"
+        />
+        <p style={{ 
+          fontSize: '.95rem',
+          fontFamily: 'Inter, sans-serif',
+          fontWeight: 500
+        }}>
+          No summary available yet
+        </p>
+        <p style={{ 
+          fontSize: '.82rem',
+          marginTop: '.5rem',
+          opacity: .7
+        }}>
+          Complete a recording to see AI insights
+        </p>
       </div>
     )
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       {summary && (
-        <div className="glass" style={{ padding: '1.25rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-            <FileText size={18} style={{ color: 'var(--accent)' }} />
-            <h3 style={{ fontSize: '0.95rem', fontWeight: 700 }}>Summary</h3>
+        <div className="glass animate-slide-up" style={{ 
+          padding: '1.4rem',
+          position: 'relative',
+          overflow: 'hidden'
+        }}>
+          <div style={{
+            position: 'absolute',
+            top: '-20px',
+            right: '-20px',
+            width: '80px',
+            height: '80px',
+            background: 'hsl(var(--accent) / .05)',
+            borderRadius: '50%',
+            pointerEvents: 'none'
+          }} />
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '10px', 
+            marginBottom: '14px',
+            position: 'relative'
+          }}>
+            <div style={{
+              width: '32px',
+              height: '32px',
+              borderRadius: '8px',
+              background: 'hsl(var(--accent) / .15)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              border: '2px solid hsl(var(--accent) / .3)'
+            }}>
+              <FileText size={16} style={{ color: 'hsl(var(--accent))' }} />
+            </div>
+            <h3 style={{ 
+              fontSize: '1.05rem', 
+              fontWeight: 700,
+              fontFamily: 'Inter, sans-serif',
+              color: 'hsl(var(--ink))'
+            }}>
+              Summary
+            </h3>
+            <Sparkles size={14} style={{ color: 'hsl(var(--accent))', opacity: .6 }} />
           </div>
-          <p style={{ fontSize: '0.875rem', lineHeight: 1.7, color: 'var(--text-secondary)' }}>
+          <p style={{ 
+            fontSize: '0.9rem', 
+            lineHeight: 1.75, 
+            color: 'hsl(var(--ink-soft))',
+            fontFamily: 'Inter, sans-serif',
+            position: 'relative'
+          }}>
             {summary}
           </p>
         </div>
       )}
 
       {keyPoints && keyPoints.length > 0 && (
-        <div className="glass" style={{ padding: '1.25rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-            <Lightbulb size={18} style={{ color: 'var(--warning)' }} />
-            <h3 style={{ fontSize: '0.95rem', fontWeight: 700 }}>Key Points</h3>
+        <div className="glass animate-slide-up" style={{ 
+          padding: '1.4rem',
+          animationDelay: '0.1s',
+          animationFillMode: 'both'
+        }}>
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '10px', 
+            marginBottom: '14px' 
+          }}>
+            <div style={{
+              width: '32px',
+              height: '32px',
+              borderRadius: '8px',
+              background: 'hsl(var(--sticky-yellow) / .4)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              border: '2px solid hsl(var(--ink) / .2)'
+            }}>
+              <Lightbulb size={16} style={{ color: 'hsl(var(--ink))' }} />
+            </div>
+            <h3 style={{ 
+              fontSize: '1.05rem', 
+              fontWeight: 700,
+              fontFamily: 'Inter, sans-serif',
+              color: 'hsl(var(--ink))'
+            }}>
+              Key Points
+            </h3>
           </div>
-          <ul style={{ paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <ul style={{ 
+            paddingLeft: '1.5rem', 
+            display: 'flex', 
+            flexDirection: 'column', 
+            gap: '10px' 
+          }}>
             {keyPoints.map((point, idx) => (
-              <li key={idx} style={{ fontSize: '0.875rem', lineHeight: 1.6, color: 'var(--text-secondary)' }}>
+              <li 
+                key={idx} 
+                className="animate-slide-up"
+                style={{ 
+                  fontSize: '0.88rem', 
+                  lineHeight: 1.7, 
+                  color: 'hsl(var(--ink-soft))',
+                  fontFamily: 'Inter, sans-serif',
+                  animationDelay: `${0.1 + idx * 0.05}s`,
+                  animationFillMode: 'both'
+                }}
+              >
                 {point}
               </li>
             ))}
@@ -55,14 +165,57 @@ export default function SummaryPanel({ summary, keyPoints, actionItems, speakers
       )}
 
       {actionItems && actionItems.length > 0 && (
-        <div className="glass" style={{ padding: '1.25rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-            <CheckSquare size={18} style={{ color: 'var(--success)' }} />
-            <h3 style={{ fontSize: '0.95rem', fontWeight: 700 }}>Action Items</h3>
+        <div className="glass animate-slide-up" style={{ 
+          padding: '1.4rem',
+          animationDelay: '0.2s',
+          animationFillMode: 'both'
+        }}>
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '10px', 
+            marginBottom: '14px' 
+          }}>
+            <div style={{
+              width: '32px',
+              height: '32px',
+              borderRadius: '8px',
+              background: 'hsl(var(--sticky-green) / .4)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              border: '2px solid hsl(var(--ink) / .2)'
+            }}>
+              <CheckSquare size={16} style={{ color: 'hsl(var(--ink))' }} />
+            </div>
+            <h3 style={{ 
+              fontSize: '1.05rem', 
+              fontWeight: 700,
+              fontFamily: 'Inter, sans-serif',
+              color: 'hsl(var(--ink))'
+            }}>
+              Action Items
+            </h3>
           </div>
-          <ul style={{ paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <ul style={{ 
+            paddingLeft: '1.5rem', 
+            display: 'flex', 
+            flexDirection: 'column', 
+            gap: '10px' 
+          }}>
             {actionItems.map((item, idx) => (
-              <li key={idx} style={{ fontSize: '0.875rem', lineHeight: 1.6, color: 'var(--text-secondary)' }}>
+              <li 
+                key={idx}
+                className="animate-slide-up"
+                style={{ 
+                  fontSize: '0.88rem', 
+                  lineHeight: 1.7, 
+                  color: 'hsl(var(--ink-soft))',
+                  fontFamily: 'Inter, sans-serif',
+                  animationDelay: `${0.2 + idx * 0.05}s`,
+                  animationFillMode: 'both'
+                }}
+              >
                 {item}
               </li>
             ))}
@@ -71,37 +224,75 @@ export default function SummaryPanel({ summary, keyPoints, actionItems, speakers
       )}
 
       {speakers && speakers.length > 0 && (
-        <div className="glass" style={{ padding: '1.25rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-            <Users size={18} style={{ color: 'var(--accent)' }} />
-            <h3 style={{ fontSize: '0.95rem', fontWeight: 700 }}>Speakers Overview</h3>
+        <div className="glass animate-slide-up" style={{ 
+          padding: '1.4rem',
+          animationDelay: '0.3s',
+          animationFillMode: 'both'
+        }}>
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '10px', 
+            marginBottom: '14px' 
+          }}>
+            <div style={{
+              width: '32px',
+              height: '32px',
+              borderRadius: '8px',
+              background: 'hsl(var(--sticky-blue) / .4)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              border: '2px solid hsl(var(--ink) / .2)'
+            }}>
+              <Users size={16} style={{ color: 'hsl(var(--ink))' }} />
+            </div>
+            <h3 style={{ 
+              fontSize: '1.05rem', 
+              fontWeight: 700,
+              fontFamily: 'Inter, sans-serif',
+              color: 'hsl(var(--ink))'
+            }}>
+              Speakers Overview
+            </h3>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             {speakers.map((speaker, idx) => (
-              <div key={idx}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
-                  <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+              <div 
+                key={idx}
+                className="animate-slide-up"
+                style={{
+                  animationDelay: `${0.3 + idx * 0.05}s`,
+                  animationFillMode: 'both'
+                }}
+              >
+                <div style={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between', 
+                  marginBottom: '8px' 
+                }}>
+                  <span style={{ 
+                    fontSize: '0.88rem', 
+                    fontWeight: 600, 
+                    color: 'hsl(var(--ink))',
+                    fontFamily: 'Inter, sans-serif'
+                  }}>
                     {speaker.name}
                   </span>
-                  <span style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>
+                  <span style={{ 
+                    fontSize: '0.88rem', 
+                    color: 'hsl(var(--pencil))',
+                    fontFamily: 'JetBrains Mono, monospace',
+                    fontWeight: 600
+                  }}>
                     {speaker.percentage}%
                   </span>
                 </div>
-                <div
-                  style={{
-                    height: '6px',
-                    background: 'var(--bg-elevated)',
-                    borderRadius: '99px',
-                    overflow: 'hidden',
-                  }}
-                >
+                <div className="progress-bar">
                   <div
+                    className="progress-bar-fill"
                     style={{
-                      height: '100%',
                       width: `${speaker.percentage}%`,
-                      background: 'var(--accent)',
-                      borderRadius: '99px',
-                      transition: 'width 0.5s ease',
                     }}
                   />
                 </div>

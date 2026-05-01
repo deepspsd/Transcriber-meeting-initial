@@ -55,48 +55,125 @@ export default function HistoryPage() {
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', height: '100dvh', overflow: 'hidden' }}>
       <div className="center-panel">
-        <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid var(--bg-border)', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <HistoryIcon size={18} style={{ color: 'var(--accent)' }} />
-          <h1 style={{ fontSize: '1.1rem', fontWeight: 700 }}>History</h1>
-          <span className="badge badge-purple">{items.length}</span>
+        <div className="panel-header">
+          <HistoryIcon size={20} style={{ color: 'hsl(var(--accent))' }} />
+          <div style={{ flex: 1 }}>
+            <h1 style={{ marginBottom: '.25rem' }}>History</h1>
+            <p style={{ 
+              fontSize: '.88rem', 
+              color: 'hsl(var(--pencil))',
+              fontFamily: 'Inter, sans-serif',
+              fontWeight: 400
+            }}>
+              View and manage your recordings
+            </p>
+          </div>
+          <span className="badge badge-purple" style={{ fontSize: '.8rem', padding: '.25rem .7rem' }}>
+            {items.length} {items.length === 1 ? 'recording' : 'recordings'}
+          </span>
         </div>
 
-        <div style={{ flex: 1, overflowY: 'auto', padding: '1.25rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        <div style={{ 
+          flex: 1, 
+          overflowY: 'auto', 
+          padding: '1.5rem 1.75rem', 
+          display: 'flex', 
+          flexDirection: 'column', 
+          gap: '12px',
+          background: 'hsl(var(--paper) / .5)'
+        }}>
           {loading && (
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', padding: '3rem' }}>
-              <Loader size={20} className="spin" />
+            <div style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center', 
+              color: 'hsl(var(--pencil))', 
+              padding: '4rem',
+              flexDirection: 'column',
+              gap: '1rem'
+            }}>
+              <Loader size={28} className="spin" style={{ color: 'hsl(var(--accent))' }} />
+              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '.9rem' }}>Loading recordings...</p>
             </div>
           )}
 
           {!loading && items.length === 0 && (
-            <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
-              <Mic size={32} style={{ margin: '0 auto 0.75rem', display: 'block', opacity: 0.4 }} />
-              No recordings yet. Start by recording a conversation!
+            <div style={{ 
+              textAlign: 'center', 
+              padding: '4rem 2rem', 
+              color: 'hsl(var(--pencil))' 
+            }}>
+              <Mic 
+                size={48} 
+                style={{ 
+                  margin: '0 auto 1.5rem', 
+                  display: 'block', 
+                  opacity: 0.3,
+                  color: 'hsl(var(--accent))'
+                }} 
+                className="animate-float"
+              />
+              <p style={{ 
+                fontSize: '1rem',
+                fontWeight: 600,
+                marginBottom: '.5rem',
+                fontFamily: 'Inter, sans-serif'
+              }}>
+                No recordings yet
+              </p>
+              <p style={{ fontSize: '.88rem', opacity: .7 }}>
+                Start by recording a conversation!
+              </p>
             </div>
           )}
 
-          {items.map((item) => (
+          {items.map((item, idx) => (
             <div
               key={item.id}
-              className="glass fade-in"
+              className="card-hover animate-slide-up"
               onClick={() => navigate(`/dashboard/history/${item.id}`)}
-              style={{ padding: '1rem 1.25rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px', transition: 'border-color 0.15s' }}
-              onMouseEnter={(e) => (e.currentTarget.style.borderColor = 'var(--accent)')}
-              onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)')}
+              style={{ 
+                padding: '1.1rem 1.3rem', 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '14px',
+                animationDelay: `${idx * 0.05}s`,
+                animationFillMode: 'both'
+              }}
             >
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontWeight: 600, fontSize: '0.9rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginBottom: '4px' }}>
+                <div style={{ 
+                  fontWeight: 600, 
+                  fontSize: '0.95rem', 
+                  overflow: 'hidden', 
+                  textOverflow: 'ellipsis', 
+                  whiteSpace: 'nowrap', 
+                  marginBottom: '6px',
+                  color: 'hsl(var(--ink))',
+                  fontFamily: 'Inter, sans-serif'
+                }}>
                   {item.filename}
                 </div>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Clock size={11} /> {fmtDate(item.created_at)}</span>
+                <div style={{ 
+                  display: 'flex', 
+                  flexWrap: 'wrap', 
+                  gap: '12px', 
+                  fontSize: '0.8rem', 
+                  color: 'hsl(var(--pencil))',
+                  fontFamily: 'Inter, sans-serif'
+                }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <Clock size={12} /> {fmtDate(item.created_at)}
+                  </span>
                   {item.duration > 0 && <span>⏱ {fmtDuration(item.duration)}</span>}
                   {item.speakers_detected.length > 0 && (
-                    <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Users size={11} /> {item.speakers_detected.join(', ')}</span>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                      <Users size={12} /> {item.speakers_detected.join(', ')}
+                    </span>
                   )}
                 </div>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <span className={`badge ${item.status === 'done' ? 'badge-green' : item.status === 'error' ? 'badge-red' : 'badge-yellow'}`}>
                   {item.status}
                 </span>
@@ -104,11 +181,16 @@ export default function HistoryPage() {
                 <button
                   onClick={(e) => handleDelete(item.id, e)}
                   disabled={deletingId === item.id}
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '4px' }}
+                  className="icon-btn"
+                  style={{ 
+                    width: '32px',
+                    height: '32px',
+                    background: 'hsl(var(--card))'
+                  }}
                 >
                   {deletingId === item.id ? <Loader size={14} className="spin" /> : <Trash2 size={14} />}
                 </button>
-                <ChevronRight size={14} style={{ color: 'var(--text-muted)' }} />
+                <ChevronRight size={16} style={{ color: 'hsl(var(--pencil))' }} />
               </div>
             </div>
           ))}
@@ -116,10 +198,31 @@ export default function HistoryPage() {
       </div>
 
       {/* Empty right panel when no recording selected */}
-      <div className="chat-panel" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textAlign: 'center', padding: '1rem' }}>
-          Click a recording to review it.
-        </p>
+      <div className="chat-panel" style={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center',
+        background: 'hsl(var(--card))'
+      }}>
+        <div style={{ textAlign: 'center', padding: '2rem' }}>
+          <HistoryIcon 
+            size={40} 
+            style={{ 
+              margin: '0 auto 1rem', 
+              display: 'block', 
+              opacity: 0.2,
+              color: 'hsl(var(--accent))'
+            }}
+            className="animate-float"
+          />
+          <p style={{ 
+            color: 'hsl(var(--pencil))', 
+            fontSize: '0.88rem', 
+            fontFamily: 'Inter, sans-serif'
+          }}>
+            Click a recording to review it
+          </p>
+        </div>
       </div>
     </div>
   )

@@ -132,36 +132,109 @@ export default function RecordPage() {
       <div className="center-panel">
 
         {/* Header */}
-        <div className="panel-header">
-          <Radio size={16} style={{ color: stage === 'recording' ? 'var(--danger)' : 'var(--accent)' }} />
+        <div className="panel-header" style={{ position: 'relative', overflow: 'hidden' }}>
+          <div style={{ 
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: '3px',
+            background: stage === 'recording' 
+              ? 'linear-gradient(90deg, hsl(var(--destructive)), hsl(var(--accent)))' 
+              : 'hsl(var(--accent))',
+            animation: stage === 'recording' ? 'progress-shimmer 2s infinite' : 'none'
+          }} />
+          <Radio 
+            size={18} 
+            style={{ 
+              color: stage === 'recording' ? 'hsl(var(--destructive))' : 'hsl(var(--accent))',
+              transition: 'all .3s'
+            }} 
+            className={stage === 'recording' ? 'animate-pulse-rec' : ''}
+          />
           <div style={{ flex: 1 }}>
-            <h1>Record Conversation</h1>
-            <p>Record first, then get transcription + speaker ID</p>
+            <h1 style={{ marginBottom: '.25rem' }}>Record Conversation</h1>
+            <p style={{ 
+              fontSize: '.88rem', 
+              color: 'hsl(var(--pencil))',
+              fontFamily: 'Inter, sans-serif',
+              fontWeight: 400
+            }}>
+              Record first, then get transcription + speaker ID
+            </p>
           </div>
           {result?.speakers_detected?.length > 0 && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '.78rem', color: 'var(--text-secondary)' }}>
-              <Users size={13} />
-              {result.speakers_detected.join(', ')}
+            <div className="animate-slide-in-right" style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '6px', 
+              fontSize: '.82rem', 
+              color: 'hsl(var(--pencil))',
+              padding: '.4rem .8rem',
+              background: 'hsl(var(--sticky-green) / .3)',
+              borderRadius: '999px',
+              border: '2px solid hsl(var(--ink) / .2)'
+            }}>
+              <Users size={14} />
+              <span style={{ fontWeight: 600 }}>{result.speakers_detected.join(', ')}</span>
             </div>
           )}
         </div>
 
         {/* Recorder */}
-        <div style={{ padding: '1.5rem', borderBottom: '1px solid var(--bg-border)', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <div style={{ 
+          padding: '2rem 1.5rem', 
+          borderBottom: '2px dashed hsl(var(--border))', 
+          display: 'flex', 
+          flexDirection: 'column', 
+          gap: '1.25rem',
+          background: stage === 'recording' ? 'hsl(var(--destructive) / .03)' : 'transparent',
+          transition: 'background .3s'
+        }}>
 
           {/* Waveform */}
-          <WaveformVisualizer analyser={recorder.analyser} isActive={stage === 'recording'} />
+          <div className={stage === 'recording' ? 'animate-slide-up' : ''}>
+            <WaveformVisualizer analyser={recorder.analyser} isActive={stage === 'recording'} />
+          </div>
 
           {/* Timer */}
-          <div style={{ textAlign: 'center', fontSize: '2.2rem', fontWeight: 800, fontFamily: 'JetBrains Mono,monospace', color: stage === 'recording' ? 'var(--danger)' : 'var(--text-muted)', letterSpacing: '.04em' }}>
+          <div style={{ 
+            textAlign: 'center', 
+            fontSize: '2.5rem', 
+            fontWeight: 700, 
+            fontFamily: 'JetBrains Mono, monospace', 
+            color: stage === 'recording' ? 'hsl(var(--destructive))' : 'hsl(var(--pencil))', 
+            letterSpacing: '.06em',
+            textShadow: stage === 'recording' ? '0 0 20px hsl(var(--destructive) / .3)' : 'none',
+            transition: 'all .3s'
+          }}>
             {recorder.formattedDuration}
           </div>
 
           {/* Status chips */}
           {stage === 'recording' && (
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', flexDirection: 'column' }}>
-              <span className="badge badge-red" style={{ padding: '.35rem .9rem', fontSize: '.78rem' }}>
-                <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--danger)', display: 'inline-block', animation: 'pulse-rec .9s ease infinite', marginRight: '4px' }} />
+            <div className="animate-bounce-in" style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center', 
+              gap: '8px', 
+              flexDirection: 'column' 
+            }}>
+              <span className="badge badge-red" style={{ 
+                padding: '.45rem 1.1rem', 
+                fontSize: '.82rem',
+                fontWeight: 600,
+                boxShadow: '0 0 15px hsl(var(--destructive) / .3)'
+              }}>
+                <span style={{ 
+                  width: 9, 
+                  height: 9, 
+                  borderRadius: '50%', 
+                  background: 'hsl(var(--destructive))', 
+                  display: 'inline-block', 
+                  marginRight: '6px',
+                  boxShadow: '0 0 8px hsl(var(--destructive))'
+                }} className="animate-pulse-rec" />
                 Recording
               </span>
             </div>
@@ -170,70 +243,141 @@ export default function RecordPage() {
           {/* Cross-talk alert badge — smooth, non-blocking */}
           {overlapAlert && (
             <div
-              className="badge badge-red"
+              className="badge badge-red animate-shake"
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '6px',
+                gap: '8px',
                 justifyContent: 'center',
-                padding: '.45rem 1rem',
-                fontSize: '.82rem',
-                animation: 'fadeIn .2s ease',
+                padding: '.55rem 1.2rem',
+                fontSize: '.85rem',
+                fontWeight: 600,
+                boxShadow: '0 4px 12px hsl(var(--destructive) / .3)'
               }}
             >
-              <AlertTriangle size={14} />
+              <AlertTriangle size={16} />
               ⚠️ Cross-talk detected — please speak one at a time
             </div>
           )}
 
           {processing && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center', color: 'var(--accent)', fontSize: '.875rem' }}>
-              <Loader size={15} className="spin" />
+            <div className="animate-fade-in" style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '10px', 
+              justifyContent: 'center', 
+              color: 'hsl(var(--accent))', 
+              fontSize: '.9rem',
+              fontFamily: 'Inter, sans-serif',
+              fontWeight: 500
+            }}>
+              <Loader size={16} className="spin" />
               {stage === 'uploading' ? 'Uploading…' : (PROGRESS[jobData?.progress || ''] || 'Processing…')}
             </div>
           )}
           {uploadError && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--danger)', fontSize: '.83rem', justifyContent: 'center' }}>
-              <AlertTriangle size={14} /> {uploadError}
+            <div className="animate-shake" style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '8px', 
+              color: 'hsl(var(--destructive))', 
+              fontSize: '.86rem', 
+              justifyContent: 'center',
+              fontFamily: 'Inter, sans-serif',
+              fontWeight: 500
+            }}>
+              <AlertTriangle size={16} /> {uploadError}
             </div>
           )}
 
           {/* Controls */}
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '16px' }}>
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'center', 
+            alignItems: 'center', 
+            gap: '18px',
+            marginTop: '.5rem'
+          }}>
             {stage === 'idle' && (
-              <button className="record-btn idle" onClick={() => { recorder.start(); setStage('recording') }} id="main-record-btn" title="Start recording">
-                <Mic size={34} color="var(--text-inverse)" />
+              <button 
+                className="record-btn idle" 
+                onClick={() => { recorder.start(); setStage('recording') }} 
+                id="main-record-btn" 
+                title="Start recording"
+              >
+                <Mic size={38} color="hsl(var(--accent-foreground))" />
               </button>
             )}
             {stage === 'recording' && (
-              <button className="record-btn recording" onClick={handleStop} id="main-stop-btn" title="Stop">
-                <Square size={28} color="var(--text-inverse)" fill="var(--text-inverse)" />
+              <button 
+                className="record-btn recording" 
+                onClick={handleStop} 
+                id="main-stop-btn" 
+                title="Stop"
+              >
+                <Square size={32} color="hsl(var(--accent-foreground))" fill="hsl(var(--accent-foreground))" />
               </button>
             )}
             {stage === 'stopped' && (
-              <>
-                <button className="btn btn-ghost" onClick={handleReset}><RotateCcw size={15} /> Discard</button>
-                <button className="btn btn-primary" onClick={handleSubmit} id="submit-btn">Analyse Recording</button>
-              </>
+              <div className="animate-slide-up" style={{ display: 'flex', gap: '12px' }}>
+                <button className="btn btn-ghost" onClick={handleReset}>
+                  <RotateCcw size={16} /> Discard
+                </button>
+                <button className="btn btn-primary" onClick={handleSubmit} id="submit-btn">
+                  Analyse Recording
+                </button>
+              </div>
             )}
             {processing && (
-              <button className="record-btn idle" disabled style={{ opacity: .4 }}>
-                <Loader size={28} color="var(--text-inverse)" className="spin" />
+              <button className="record-btn idle" disabled style={{ opacity: .5 }}>
+                <Loader size={32} color="hsl(var(--accent-foreground))" className="spin" />
               </button>
             )}
             {(stage === 'done' || stage === 'error') && (
-              <button className="btn btn-ghost" onClick={handleReset}><RotateCcw size={15} /> New Recording</button>
+              <button className="btn btn-ghost animate-bounce-in" onClick={handleReset}>
+                <RotateCcw size={16} /> New Recording
+              </button>
             )}
           </div>
 
           {/* Audio preview */}
           {recorder.audioUrl && stage === 'stopped' && (
-            <audio src={recorder.audioUrl} controls style={{ width: '100%', height: 36, accentColor: 'var(--accent)' }} />
+            <div className="animate-slide-up" style={{ marginTop: '.5rem' }}>
+              <audio 
+                src={recorder.audioUrl} 
+                controls 
+                style={{ 
+                  width: '100%', 
+                  height: 42, 
+                  accentColor: 'hsl(var(--accent))',
+                  borderRadius: '12px',
+                  filter: 'url(#squiggle-soft)'
+                }} 
+              />
+            </div>
           )}
         </div>
 
         {/* Transcript */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '1.25rem 1.5rem' }}>
+        <div style={{ 
+          flex: 1, 
+          overflowY: 'auto', 
+          padding: '1.5rem 1.75rem',
+          background: 'hsl(var(--paper) / .5)'
+        }}>
+          {result?.transcript?.length > 0 && (
+            <div className="animate-slide-up" style={{ marginBottom: '1rem' }}>
+              <h3 style={{ 
+                fontSize: '1.1rem', 
+                fontWeight: 700, 
+                color: 'hsl(var(--ink))',
+                fontFamily: 'Caveat, cursive',
+                marginBottom: '.5rem'
+              }}>
+                Transcript
+              </h3>
+            </div>
+          )}
           <TranscriptViewer segments={result?.transcript || []} />
         </div>
       </div>
