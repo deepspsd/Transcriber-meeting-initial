@@ -16,7 +16,7 @@ export default function UploadPage() {
   const fileRef = useRef<HTMLInputElement>(null)
 
   const onDone = useCallback((data: any) => setResult(data), [])
-  const jobData = useJobPoller(uploading || result ? recordingId : null, onDone)
+  const jobData = useJobPoller(recordingId && !result ? recordingId : null, onDone)
 
   const handleFile = (f: File) => {
     setFile(f)

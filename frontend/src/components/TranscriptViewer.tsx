@@ -21,11 +21,11 @@ interface Props {
 }
 
 const SPEAKER_COLORS = [
-  'var(--accent)',
-  'var(--accent-2)',
-  'var(--accent-warn)',
-  'var(--accent-danger)',
-  'var(--accent-success)',
+  'hsl(var(--accent))',
+  'hsl(var(--sticky-blue))',
+  'hsl(var(--sticky-purple))',
+  'hsl(var(--sticky-green))',
+  'hsl(var(--sticky-indigo))',
   '#f6ad55',
 ]
 
@@ -44,12 +44,17 @@ function wordClass(prob: number, low: number, mid: number) {
 export default function TranscriptViewer({ segments, wordConfLow = 0.7, wordConfMid = 0.85 }: Props) {
   if (!segments || segments.length === 0) {
     return (
-      <div style={{ color: 'var(--text-muted)', textAlign: 'center', padding: '2rem', fontSize: '0.875rem' }}>
+      <div style={{ 
+        color: 'hsl(var(--pencil))', 
+        textAlign: 'center', 
+        padding: '3rem', 
+        fontSize: '0.95rem',
+        fontFamily: 'Inter, sans-serif'
+      }}>
         No transcript yet. Record or upload audio to get started.
       </div>
     )
   }
-  console.log(segments)
 
   // Build speaker → color map
   const speakerColors: Record<string, string> = {}
@@ -62,16 +67,22 @@ export default function TranscriptViewer({ segments, wordConfLow = 0.7, wordConf
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
       {segments.map((seg, i) => (
-        <div key={i} className="transcript-segment fade-in">
+        <div key={i} className="transcript-segment animate-slide-up" style={{
+          animationDelay: `${i * 0.05}s`,
+          animationFillMode: 'both'
+        }}>
           <div
             className="speaker-name"
-            style={{ color: speakerColors[seg.speaker_label] }}
+            style={{ 
+              color: speakerColors[seg.speaker_label],
+              marginBottom: '.5rem'
+            }}
           >
             {seg.is_overlap ? '⚡ ' : ''}{seg.speaker_label}
           </div>
-          <div className="seg-text">
+          <div className="seg-text" style={{ marginBottom: '.5rem' }}>
             {seg.words && seg.words.length > 0
               ? seg.words.map((w, wi) => (
                 <span
@@ -89,11 +100,55 @@ export default function TranscriptViewer({ segments, wordConfLow = 0.7, wordConf
           </div>
         </div>
       ))}
+      
       {/* Legend */}
-      <div style={{ display: 'flex', gap: '1rem', padding: '0.5rem 0', fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-        <span><span className="word-hi">■</span> High confidence (&gt;85%)</span>
-        <span><span className="word-mid">■</span> Medium (70–85%)</span>
-        <span><span className="word-low">■</span> Low (&lt;70%)</span>
+      <div style={{ 
+        display: 'flex', 
+        gap: '1.5rem', 
+        padding: '1.25rem 1rem', 
+        fontSize: '0.85rem', 
+        color: 'hsl(var(--ink-soft))',
+        marginTop: '1rem',
+        background: 'hsl(var(--card) / .5)',
+        borderRadius: '10px 14px 12px 16px / 14px 12px 16px 10px',
+        border: '2px dashed hsl(var(--ink) / .2)',
+        flexWrap: 'wrap',
+        fontFamily: 'Inter, sans-serif',
+        fontWeight: 500
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <span style={{
+            display: 'inline-block',
+            width: '20px',
+            height: '20px',
+            background: 'hsl(var(--sticky-green) / .35)',
+            border: '1px solid hsl(var(--sticky-green) / .5)',
+            borderRadius: '4px'
+          }} />
+          <span>High confidence (&gt;85%)</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <span style={{
+            display: 'inline-block',
+            width: '20px',
+            height: '20px',
+            background: 'hsl(var(--sticky-yellow) / .45)',
+            border: '1px solid hsl(45 90% 55%)',
+            borderRadius: '4px'
+          }} />
+          <span>Medium (70–85%)</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <span style={{
+            display: 'inline-block',
+            width: '20px',
+            height: '20px',
+            background: 'hsl(var(--destructive) / .25)',
+            border: '1px solid hsl(var(--destructive) / .5)',
+            borderRadius: '4px'
+          }} />
+          <span>Low (&lt;70%)</span>
+        </div>
       </div>
     </div>
   )
