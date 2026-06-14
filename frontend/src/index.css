@@ -944,6 +944,26 @@
   /* Mono numbers/timestamps */
   .mono { font-family: 'JetBrains Mono', 'SF Mono', ui-monospace, monospace; }
 
+  /* Key points section - ensure mouse wheel scrolling works */
+  .key-points-section {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--accent) / .4) transparent;
+  }
+  .key-points-section::-webkit-scrollbar {
+    width: 8px;
+  }
+  .key-points-section::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .key-points-section::-webkit-scrollbar-thumb {
+    background: hsl(var(--accent) / .4);
+    border-radius: 99px;
+    border: 1px solid hsl(var(--accent) / .6);
+  }
+  .key-points-section::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--accent) / .6);
+  }
+
   /* ── Page transitions ──────────────────────────────── */
   .page-transition-enter {
     opacity: 0;

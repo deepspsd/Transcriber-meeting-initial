@@ -15,10 +15,21 @@ export default function Dashboard() {
   return (
     <div
       className="dashboard-layout"
-      style={{ gridTemplateColumns: `${sidebarW} 1fr` }}
+      style={{ 
+        gridTemplateColumns: `${sidebarW} 1fr`,
+        height: '100vh',
+        overflow: 'hidden'
+      }}
     >
       <Sidebar />
-      <Outlet />
+      <div style={{ 
+        height: '100vh',
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column'
+      }}>
+        <Outlet />
+      </div>
     </div>
   )
 }

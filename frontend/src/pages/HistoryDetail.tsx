@@ -55,24 +55,75 @@ export default function HistoryDetail() {
   const chatW = chatOpen ? '340px' : '48px'
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: `1fr ${chatW}`, height: '100dvh', overflow: 'hidden', transition: 'grid-template-columns .25s ease' }}>
-      <div className="center-panel">
-        <div style={{ padding: '1rem 1.5rem', borderBottom: '1px solid var(--bg-border)', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <button onClick={() => navigate('/dashboard/history')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center' }}>
-            <ArrowLeft size={18} />
+    <div style={{ 
+      display: 'grid', 
+      gridTemplateColumns: `1fr ${chatW}`, 
+      height: '100%', 
+      overflow: 'hidden', 
+      transition: 'grid-template-columns .25s ease' 
+    }}>
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+        overflow: 'hidden'
+      }}>
+        {/* Header */}
+        <div className="panel-header" style={{ flexShrink: 0 }}>
+          <button 
+            onClick={() => navigate('/dashboard/history')} 
+            className="icon-btn"
+            title="Back to history"
+          >
+            <ArrowLeft size={16} />
           </button>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <h1 style={{ fontSize: '0.95rem', fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{rec.filename}</h1>
-            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-              {new Date(rec.created_at).toLocaleString()} {rec.duration ? `• ${Math.floor(rec.duration / 60)}m ${Math.floor(rec.duration % 60)}s` : ''}
+            <h1 style={{ 
+              fontSize: '1.05rem', 
+              fontWeight: 700, 
+              overflow: 'hidden', 
+              textOverflow: 'ellipsis', 
+              whiteSpace: 'nowrap',
+              fontFamily: 'Inter, sans-serif',
+              color: 'hsl(var(--ink))',
+              marginBottom: '.25rem'
+            }}>
+              {rec.filename}
+            </h1>
+            <p style={{ 
+              fontSize: '0.8rem', 
+              color: 'hsl(var(--pencil))',
+              fontFamily: 'Inter, sans-serif'
+            }}>
+              {new Date(rec.created_at).toLocaleString()} 
+              {rec.duration ? ` • ${Math.floor(rec.duration / 60)}m ${Math.floor(rec.duration % 60)}s` : ''}
             </p>
           </div>
-          {audioUrl && <audio src={audioUrl} controls style={{ height: 36 }} />}
+          {audioUrl && (
+            <audio 
+              src={audioUrl} 
+              controls 
+              style={{ 
+                height: 38,
+                accentColor: 'hsl(var(--accent))',
+                borderRadius: '8px'
+              }} 
+            />
+          )}
         </div>
-        <div style={{ flex: 1, overflowY: 'auto', padding: '1.25rem 1.5rem' }}>
+
+        {/* Transcript - SCROLLABLE */}
+        <div style={{ 
+          flex: 1, 
+          overflowY: 'auto', 
+          padding: '1.5rem 1.75rem',
+          background: 'hsl(var(--paper) / .5)',
+          minHeight: 0 // Important for flex scrolling
+        }}>
           <TranscriptViewer segments={rec.transcript || []} />
         </div>
       </div>
+
       <AIChatPanel
         recordingId={id!}
         summary={rec.summary}

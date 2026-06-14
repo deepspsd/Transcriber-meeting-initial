@@ -53,9 +53,19 @@ export default function HistoryPage() {
   }
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', height: '100dvh', overflow: 'hidden' }}>
-      <div className="center-panel">
-        <div className="panel-header">
+    <div style={{ 
+      display: 'grid', 
+      gridTemplateColumns: '1fr 340px', 
+      height: '100%', 
+      overflow: 'hidden' 
+    }}>
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+        overflow: 'hidden'
+      }}>
+        <div className="panel-header" style={{ flexShrink: 0 }}>
           <HistoryIcon size={20} style={{ color: 'hsl(var(--accent))' }} />
           <div style={{ flex: 1 }}>
             <h1 style={{ marginBottom: '.25rem' }}>History</h1>
@@ -73,6 +83,7 @@ export default function HistoryPage() {
           </span>
         </div>
 
+        {/* SCROLLABLE LIST */}
         <div style={{ 
           flex: 1, 
           overflowY: 'auto', 
@@ -80,7 +91,8 @@ export default function HistoryPage() {
           display: 'flex', 
           flexDirection: 'column', 
           gap: '12px',
-          background: 'hsl(var(--paper) / .5)'
+          background: 'hsl(var(--paper) / .5)',
+          minHeight: 0 // Important for flex scrolling
         }}>
           {loading && (
             <div style={{ 
