@@ -10,7 +10,7 @@ import {
   FileText,
   Layers,
   Star,
-  CheckCircle2,
+
   MessageSquare,
   Sparkles,
 } from "lucide-react";
@@ -702,124 +702,7 @@ function ClientScribbles() {
   );
 }
 
-// ─── 11. Pricing ──────────────────────────────────────────────────────────
-function PricingDrafts() {
-  const plans = [
-    {
-      title: "Starter",
-      price: "$0",
-      features: [
-        "5 recordings / month",
-        "Basic transcription",
-        "2 voice profiles",
-        "30-day history",
-      ],
-    },
-    {
-      title: "Pro",
-      price: "$19",
-      features: [
-        "Unlimited recordings",
-        "Speaker diarization",
-        "Unlimited voice profiles",
-        "AI Chat + Insights",
-        "Export & share",
-      ],
-      featured: true,
-    },
-    {
-      title: "Team",
-      price: "$49",
-      features: [
-        "Everything in Pro",
-        "Multi-user workspace",
-        "Priority processing",
-        "Admin dashboard",
-        "SSO & API access",
-      ],
-    },
-  ];
 
-  return (
-    <section className="relative py-24 px-6 overflow-hidden">
-      <GraphPaper />
-      <div className="max-w-5xl mx-auto">
-        <div className="text-center mb-14">
-          <p className="font-blueprint text-sm uppercase tracking-widest text-pencil mb-2">
-            Pricing Options
-          </p>
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="font-display text-5xl font-bold text-ink"
-            style={{ filter: "url(#lp-squiggle-soft)" }}
-          >
-            Draft Your Plan.
-          </motion.h2>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {plans.map((p, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.1 }}
-              className={cn(
-                "relative p-8 border-2 border-ink shadow-sketch transition-all duration-300 hover:-translate-y-2",
-                p.featured ? "bg-sticky-yellow" : "bg-card"
-              )}
-              style={{
-                borderRadius: "14px 22px 16px 24px / 22px 14px 24px 16px",
-                transform: `rotate(${(i - 1) * 0.5}deg)`,
-                filter: "url(#lp-squiggle-soft)",
-              }}
-            >
-              {p.featured && (
-                <div
-                  className="absolute -top-4 left-1/2 -translate-x-1/2 bg-accent text-accent-foreground text-xs font-bold px-3 py-1 border-2 border-ink shadow-sketch font-marker"
-                  style={{
-                    borderRadius: "999px",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  ★ Most Popular
-                </div>
-              )}
-              <h3 className="font-display text-2xl font-bold text-ink mb-3">
-                {p.title}
-              </h3>
-              <div className="flex items-baseline gap-1 mb-6">
-                <span className="font-display text-5xl font-bold text-ink">
-                  {p.price}
-                </span>
-                <span className="font-hand text-pencil">/mo</span>
-              </div>
-              <ul className="space-y-2 mb-8">
-                {p.features.map((f, j) => (
-                  <li key={j} className="flex items-center gap-2 font-hand text-sm text-ink">
-                    <CheckCircle2 size={14} className="text-accent flex-shrink-0" />
-                    {f}
-                  </li>
-                ))}
-              </ul>
-              <Link to="/signup" className="block">
-                <SketchButton
-                  variant={p.featured ? "primary" : "ghost"}
-                  className="w-full justify-center"
-                >
-                  Choose {p.title}
-                </SketchButton>
-              </Link>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
 
 // ─── 12. Blueprint Footer ─────────────────────────────────────────────────
 function BlueprintFooter() {
@@ -910,16 +793,21 @@ function BlueprintFooter() {
 // ─── 13. Navbar ───────────────────────────────────────────────────────────
 function Navbar() {
   return (
-    <nav
-      className="sticky top-0 z-50 flex items-center justify-between px-6 py-3 border-b-2 border-ink/30 bg-background/80 backdrop-blur-sm"
-      style={{ filter: "url(#lp-squiggle-soft)" }}
-    >
+    <nav className="sticky top-0 z-50 flex items-center justify-between px-6 py-3 border-b-2 border-ink/30 bg-background/80 backdrop-blur-sm">
       <Link to="/" className="flex items-center gap-2">
-        <Zap
-          size={22}
-          fill="currentColor"
-          className="text-accent animate-float"
-        />
+        <div style={{ position: 'relative' }}>
+          <Zap
+            size={22}
+            fill="currentColor"
+            className="text-accent animate-float"
+          />
+          <span style={{
+            position: 'absolute', top: -2, right: -2,
+            width: 6, height: 6, borderRadius: '50%',
+            background: 'hsl(var(--accent))',
+            boxShadow: '0 0 5px hsl(var(--accent))',
+          }} className="animate-pulse-rec" />
+        </div>
         <span className="font-display text-2xl font-bold text-ink">
           Voice<span className="text-accent">Sum</span>
         </span>
@@ -931,11 +819,18 @@ function Navbar() {
         <a href="#pricing" className="hover:text-accent transition-colors">Pricing</a>
       </div>
 
-      <Link to="/login">
-        <SketchButton variant="ghost" className="text-sm px-4 py-2">
-          Sign In
-        </SketchButton>
-      </Link>
+      <div className="flex items-center gap-3">
+        <Link to="/login">
+          <SketchButton variant="ghost" className="text-sm px-4 py-2">
+            Sign In
+          </SketchButton>
+        </Link>
+        <Link to="/signup">
+          <SketchButton variant="primary" className="text-sm px-4 py-2">
+            Start Free →
+          </SketchButton>
+        </Link>
+      </div>
     </nav>
   );
 }
@@ -986,9 +881,7 @@ export default function Landing() {
 
         <ClientScribbles />
 
-        <div id="pricing">
-          <PricingDrafts />
-        </div>
+
       </main>
 
       <BlueprintFooter />

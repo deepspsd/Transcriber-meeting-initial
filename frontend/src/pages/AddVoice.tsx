@@ -51,60 +51,57 @@ export default function AddVoicePage() {
       background: 'hsl(var(--paper) / .4)'
     }}>
       <div className="animate-bounce-in" style={{
-        width: '88px', height: '88px', borderRadius: '50%',
-        background: 'hsl(130,60%,45% / .15)',
+        width: '100px', height: '100px', borderRadius: '50%',
+        background: 'hsl(var(--success) / .12)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        border: '3px solid hsl(130,60%,45% / .4)'
+        border: '3px solid hsl(var(--success) / .35)',
+        boxShadow: '0 0 0 14px hsl(var(--success) / .06)',
       }}>
-        <CheckCircle size={48} style={{ color: 'hsl(130,60%,45%)' }} />
+        <CheckCircle size={52} style={{ color: 'hsl(var(--success))' }} />
       </div>
       <div style={{ textAlign: 'center' }}>
-        <h2 style={{ fontWeight: 800, fontSize: '1.8rem', fontFamily: 'Inter, sans-serif', marginBottom: '.75rem', color: 'hsl(var(--ink))', letterSpacing: '-.02em' }}>
+        <h2 style={{ fontWeight: 800, fontSize: '1.85rem', fontFamily: 'Caveat, cursive', marginBottom: '.65rem', color: 'hsl(var(--ink))', letterSpacing: '-.02em' }}>
           Voice profile saved!
         </h2>
-        <p style={{ color: 'hsl(var(--pencil))', fontSize: '1rem', fontFamily: 'Inter, sans-serif', maxWidth: '420px', lineHeight: 1.6 }}>
+        <p style={{ color: 'hsl(var(--pencil))', fontSize: '.95rem', fontFamily: 'Inter, sans-serif', maxWidth: '380px', lineHeight: 1.65 }}>
           VoiceSum will now recognise this person in future recordings
         </p>
       </div>
       <button
-        className="btn btn-primary animate-slide-up"
+        className="btn btn-success animate-slide-up"
         onClick={() => setSuccess(false)}
-        style={{ animationDelay: '0.2s', animationFillMode: 'both', padding: '.75rem 1.5rem', fontSize: '.95rem' }}
+        style={{ animationDelay: '0.2s', animationFillMode: 'both', padding: '.75rem 1.75rem', fontSize: '.95rem' }}
       >
-        <UserPlus size={16} /> Add Another
+        <UserPlus size={16} /> Add Another Voice
       </button>
     </div>
   )
 
   return (
-    <div style={{
-      flex: 1, overflowY: 'auto',
-      padding: '2.5rem 2.5rem 4rem',
-      maxWidth: '820px', margin: '0 auto', width: '100%',
-      background: 'hsl(var(--paper) / .4)'
-    }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
 
-      {/* Page header */}
-      <div className="animate-slide-up" style={{ marginBottom: '2.5rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-          <div style={{
-            width: '48px', height: '48px', borderRadius: '12px',
-            background: 'hsl(var(--accent) / .12)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            border: '2px solid hsl(var(--accent) / .3)',
-          }}>
-            <UserPlus size={24} style={{ color: 'hsl(var(--accent))' }} />
-          </div>
-          <div>
-            <h1 style={{ fontSize: '1.8rem', fontWeight: 800, fontFamily: 'Inter, sans-serif', color: 'hsl(var(--ink))', lineHeight: 1, marginBottom: '.3rem', letterSpacing: '-.02em' }}>
-              Add Voice Profile
-            </h1>
-            <p style={{ color: 'hsl(var(--pencil))', fontSize: '.9rem', fontFamily: 'Inter, sans-serif' }}>
-              Add a teammate, friend, or colleague for speaker identification
-            </p>
-          </div>
+      {/* Panel Header */}
+      <div className="panel-header">
+        <div style={{
+          width: '34px', height: '34px', borderRadius: '10px', flexShrink: 0,
+          background: 'hsl(var(--accent) / .12)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          border: '2px solid hsl(var(--accent) / .3)',
+        }}>
+          <UserPlus size={16} style={{ color: 'hsl(var(--accent))' }} />
+        </div>
+        <div style={{ flex: 1 }}>
+          <h1>Add Voice Profile</h1>
+          <p style={{ fontSize: '.82rem', color: 'hsl(var(--pencil))', fontFamily: 'Inter, sans-serif', fontWeight: 400, marginTop: '1px' }}>
+            Train speaker identification for a new person
+          </p>
         </div>
       </div>
+
+      {/* Scrollable page body */}
+      <div className="page-wrapper">
+
+      {/* Page header - REMOVED: now in panel-header */}
 
       {/* Name */}
       <div className="animate-slide-up" style={{
@@ -260,11 +257,12 @@ export default function AddVoicePage() {
         onClick={handleSave}
         disabled={submitting}
         id="save-voice-btn"
-        style={{ width: '100%', justifyContent: 'center', padding: '.75rem 1.5rem', fontSize: '.95rem' }}
+        style={{ width: '100%', justifyContent: 'center', padding: '.8rem 1.5rem', fontSize: '.95rem', marginTop: '.5rem' }}
       >
         {submitting ? <Loader size={16} className="spin" /> : <CheckCircle size={16} />}
         {submitting ? 'Saving…' : 'Save Voice Profile'}
       </button>
+      </div>
     </div>
   )
 }

@@ -41,30 +41,60 @@ function wordClass(prob: number, low: number, mid: number) {
   return 'word-hi'
 }
 
+function SpeakerAvatar({ label, color }: { label: string; color: string }) {
+  const initials = label
+    .split(' ')
+    .map((w) => w[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2)
+
+  return (
+    <div
+      className="speaker-avatar"
+      style={{
+        background: `${color}30`,
+        border: `1.5px solid ${color}60`,
+        color,
+        flexShrink: 0,
+        marginTop: '1px',
+      }}
+      title={label}
+    >
+      {initials}
+    </div>
+  )
+}
+
 export default function TranscriptViewer({ segments, wordConfLow = 0.7, wordConfMid = 0.85 }: Props) {
   if (!segments || segments.length === 0) {
     return (
-      <div style={{ 
-        color: 'hsl(var(--pencil))', 
-        textAlign: 'center', 
-        padding: '3rem 2rem', 
+      <div style={{
+        color: 'hsl(var(--pencil))',
+        textAlign: 'center',
+        padding: '3.5rem 2rem',
         fontSize: '0.95rem',
         fontFamily: 'Inter, sans-serif',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        gap: '1rem'
+        gap: '1.25rem',
       }}>
         <div style={{
-          width: '56px', height: '56px',
+          width: '72px', height: '72px',
           borderRadius: '50%',
-          background: 'hsl(var(--muted))',
+          background: 'hsl(var(--accent) / .08)',
+          border: '2px dashed hsl(var(--accent) / .22)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: '1.5rem', opacity: 0.5
-        }}>🎤</div>
+          fontSize: '2rem',
+        }} className="animate-float">🎤</div>
         <div>
-          <p style={{ fontWeight: 600, marginBottom: '.35rem', color: 'hsl(var(--ink-soft))' }}>No transcript yet</p>
-          <p style={{ fontSize: '.85rem', opacity: .7 }}>Record or upload audio to get started</p>
+          <p style={{ fontWeight: 700, marginBottom: '.4rem', color: 'hsl(var(--ink))', fontSize: '1rem' }}>
+            No transcript yet
+          </p>
+          <p style={{ fontSize: '.85rem', opacity: .65, lineHeight: 1.5 }}>
+            Record or upload audio to get started
+          </p>
         </div>
       </div>
     )
@@ -80,8 +110,11 @@ export default function TranscriptViewer({ segments, wordConfLow = 0.7, wordConf
     }
   }
 
+  // Check if any segment has word-level confidence data
+  const hasWordConf = segments.some((s) => s.words && s.words.length > 0)
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
       {segments.map((seg, i) => (
         <div
           key={i}
@@ -93,27 +126,31 @@ export default function TranscriptViewer({ segments, wordConfLow = 0.7, wordConf
           } as React.CSSProperties}
         >
           <div className="seg-meta">
+            {/* Speaker avatar */}
+            <SpeakerAvatar label={seg.speaker_label} color={speakerColors[seg.speaker_label]} />
+
             <span
               className="speaker-name"
               style={{ color: speakerColors[seg.speaker_label] }}
             >
-              {seg.is_overlap ? '⚡ ' : ''}{seg.speaker_label}
+              {seg.speaker_label}
             </span>
             <span className="seg-time">
               {formatTime(seg.start)} → {formatTime(seg.end)}
             </span>
             {seg.is_overlap && (
               <span style={{
-                fontSize: '.7rem', fontWeight: 600,
+                fontSize: '.65rem', fontWeight: 700,
                 color: 'hsl(var(--destructive))',
                 background: 'hsl(var(--destructive) / .1)',
                 border: '1px solid hsl(var(--destructive) / .3)',
                 borderRadius: '999px',
                 padding: '.1rem .45rem',
                 fontFamily: 'Inter, sans-serif',
-                letterSpacing: '.03em'
+                letterSpacing: '.04em',
+                display: 'inline-flex', alignItems: 'center', gap: '3px',
               }}>
-                OVERLAP
+                ⚡ OVERLAP
               </span>
             )}
           </div>
@@ -132,34 +169,67 @@ export default function TranscriptViewer({ segments, wordConfLow = 0.7, wordConf
           </div>
         </div>
       ))}
-      
-      {/* Legend */}
-      <div style={{ 
-        display: 'flex', 
-        gap: '1rem', 
-        padding: '1rem 1.1rem', 
-        fontSize: '0.8rem', 
-        color: 'hsl(var(--ink-soft))',
-        marginTop: '1rem',
-        background: 'hsl(var(--card))',
-        borderRadius: '10px',
-        border: '1px solid hsl(var(--ink) / .1)',
-        flexWrap: 'wrap',
-        fontFamily: 'Inter, sans-serif',
-        fontWeight: 500,
-        alignItems: 'center'
-      }}>
-        <span style={{ fontSize: '.72rem', color: 'hsl(var(--pencil))', textTransform: 'uppercase', letterSpacing: '.08em', marginRight: '.25rem' }}>Confidence:</span>
-        {[
-          { label: 'High >85%', cls: 'word-hi' },
-          { label: 'Mid 70–85%', cls: 'word-mid' },
-          { label: 'Low <70%', cls: 'word-low' },
-        ].map(({ label, cls }) => (
-          <span key={cls} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-            <span className={cls} style={{ fontSize: '.78rem', padding: '1px 6px' }}>{label}</span>
+
+      {/* Legend — only show if word confidence data exists */}
+      {hasWordConf && (
+        <div style={{
+          display: 'flex',
+          gap: '10px',
+          padding: '.85rem 1rem',
+          fontSize: '0.78rem',
+          color: 'hsl(var(--ink-soft))',
+          marginTop: '.75rem',
+          background: 'hsl(var(--card))',
+          borderRadius: '10px',
+          border: '1px solid hsl(var(--ink) / .08)',
+          flexWrap: 'wrap',
+          fontFamily: 'Inter, sans-serif',
+          fontWeight: 500,
+          alignItems: 'center',
+        }}>
+          <span style={{ fontSize: '.68rem', color: 'hsl(var(--pencil))', textTransform: 'uppercase', letterSpacing: '.1em', fontWeight: 700 }}>
+            Word confidence:
           </span>
-        ))}
-      </div>
+          {[
+            { label: 'High >85%', cls: 'word-hi' },
+            { label: 'Mid 70–85%', cls: 'word-mid' },
+            { label: 'Low <70%', cls: 'word-low' },
+          ].map(({ label, cls }) => (
+            <span key={cls} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+              <span className={cls} style={{ fontSize: '.72rem', padding: '1px 6px' }}>{label}</span>
+            </span>
+          ))}
+        </div>
+      )}
+
+      {/* Speaker legend */}
+      {Object.keys(speakerColors).length > 1 && (
+        <div style={{
+          display: 'flex',
+          gap: '8px',
+          flexWrap: 'wrap',
+          padding: '.75rem 1rem',
+          marginTop: hasWordConf ? '6px' : '.75rem',
+          background: 'hsl(var(--card))',
+          borderRadius: '10px',
+          border: '1px solid hsl(var(--ink) / .08)',
+          alignItems: 'center',
+        }}>
+          <span style={{ fontSize: '.68rem', color: 'hsl(var(--pencil))', textTransform: 'uppercase', letterSpacing: '.1em', fontWeight: 700, fontFamily: 'Inter, sans-serif' }}>
+            Speakers:
+          </span>
+          {Object.entries(speakerColors).map(([label, color]) => (
+            <span key={label} style={{
+              display: 'flex', alignItems: 'center', gap: '5px',
+              fontSize: '.75rem', fontFamily: 'Inter, sans-serif',
+              fontWeight: 600, color: 'hsl(var(--ink-soft))',
+            }}>
+              <span style={{ width: 10, height: 10, borderRadius: '50%', background: color, display: 'inline-block', boxShadow: `0 0 4px ${color}60` }} />
+              {label}
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

@@ -24,7 +24,7 @@ function fmtDate(iso: string) {
 }
 
 const STATUS_COLORS: Record<string, { bg: string; text: string; border: string }> = {
-  done: { bg: 'hsl(130,60%,45% / .12)', text: 'hsl(130,60%,38%)', border: 'hsl(130,60%,45% / .3)' },
+  done: { bg: 'hsl(var(--success) / .12)', text: 'hsl(var(--success))', border: 'hsl(var(--success) / .3)' },
   error: { bg: 'hsl(var(--destructive) / .1)', text: 'hsl(var(--destructive))', border: 'hsl(var(--destructive) / .3)' },
 }
 
@@ -141,19 +141,20 @@ export default function HistoryPage() {
         {!loading && items.length === 0 && (
           <div style={{ textAlign: 'center', padding: '5rem 2rem', color: 'hsl(var(--pencil))' }}>
             <div style={{
-              width: '72px', height: '72px', borderRadius: '50%',
+              width: '88px', height: '88px', borderRadius: '50%',
               background: 'hsl(var(--accent) / .08)',
-              border: '2px dashed hsl(var(--accent) / .25)',
+              border: '2.5px dashed hsl(var(--accent) / .25)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              margin: '0 auto 1.5rem'
+              margin: '0 auto 1.5rem',
+              boxShadow: '0 0 0 10px hsl(var(--accent) / .04)',
             }}>
-              <Mic size={32} style={{ opacity: 0.35, color: 'hsl(var(--accent))' }} className="animate-float" />
+              <Mic size={36} style={{ opacity: 0.45, color: 'hsl(var(--accent))' }} className="animate-float" />
             </div>
-            <p style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '.5rem', fontFamily: 'Inter, sans-serif', color: 'hsl(var(--ink))' }}>
+            <p style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '.6rem', fontFamily: 'Inter, sans-serif', color: 'hsl(var(--ink))' }}>
               No recordings yet
             </p>
-            <p style={{ fontSize: '.87rem', opacity: .7, fontFamily: 'Inter, sans-serif' }}>
-              Start by recording a conversation!
+            <p style={{ fontSize: '.88rem', opacity: .65, fontFamily: 'Inter, sans-serif', lineHeight: 1.6, maxWidth: '280px', margin: '0 auto' }}>
+              Head to the Record tab and capture your first conversation
             </p>
           </div>
         )}
@@ -169,32 +170,16 @@ export default function HistoryPage() {
           return (
             <div
               key={item.id}
-              className="animate-slide-up"
+              className="transcript-segment animate-slide-up"
               onClick={() => navigate(`/dashboard/history/${item.id}`)}
               style={{
+                '--speaker-color': 'hsl(var(--accent))',
                 display: 'flex', alignItems: 'center', gap: '14px',
                 padding: '1rem 1.25rem',
-                background: 'hsl(var(--card))',
-                border: '1.5px solid hsl(var(--ink) / .1)',
-                borderLeft: '4px solid hsl(var(--accent) / .4)',
-                borderRadius: '0 10px 10px 0',
                 cursor: 'pointer',
-                transition: 'all .2s cubic-bezier(0.4,0,.2,1)',
                 animationDelay: `${idx * 0.04}s`,
                 animationFillMode: 'both',
-                position: 'relative',
-                overflow: 'hidden',
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLDivElement).style.borderLeftColor = 'hsl(var(--accent))'
-                ;(e.currentTarget as HTMLDivElement).style.transform = 'translateX(4px)'
-                ;(e.currentTarget as HTMLDivElement).style.boxShadow = '2px 2px 0 0 hsl(var(--ink) / .06)'
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLDivElement).style.borderLeftColor = 'hsl(var(--accent) / .4)'
-                ;(e.currentTarget as HTMLDivElement).style.transform = 'translateX(0)'
-                ;(e.currentTarget as HTMLDivElement).style.boxShadow = 'none'
-              }}
+              } as React.CSSProperties}
             >
               {/* Icon */}
               <div style={{
@@ -236,26 +221,12 @@ export default function HistoryPage() {
 
               {/* Right badges */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
-                <span style={{
-                  fontSize: '.72rem', fontWeight: 600,
-                  color: sc.text, background: sc.bg,
-                  padding: '.15rem .55rem', borderRadius: '999px',
-                  border: `1.5px solid ${sc.border}`,
-                  fontFamily: 'Inter, sans-serif',
-                  textTransform: 'uppercase', letterSpacing: '.04em'
-                }}>
+                <span className={`status-badge ${item.status === 'done' ? 'done' : item.status === 'error' ? 'error' : 'processing'}`}>
                   {item.status}
                 </span>
                 {item.has_summary && (
-                  <span style={{
-                    fontSize: '.72rem', fontWeight: 600,
-                    color: 'hsl(235,80%,60%)',
-                    background: 'hsl(235,80%,60% / .1)',
-                    padding: '.15rem .55rem', borderRadius: '999px',
-                    border: '1.5px solid hsl(235,80%,60% / .3)',
-                    fontFamily: 'Inter, sans-serif',
-                  }}>
-                    AI
+                  <span className="status-badge ai">
+                    ✦ AI
                   </span>
                 )}
                 <button

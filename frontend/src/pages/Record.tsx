@@ -1,10 +1,12 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
-import { Mic, Square, RotateCcw, Loader, AlertTriangle, Users, Radio } from 'lucide-react'
+import { Mic, Square, RotateCcw, Loader, AlertTriangle, Users, Radio, CheckCircle } from 'lucide-react'
 import { useAudioRecorder } from '../hooks/useAudioRecorder'
 import { useJobPoller } from '../hooks/useJobPoller'
 import WaveformVisualizer from '../components/WaveformVisualizer'
 import TranscriptViewer from '../components/TranscriptViewer'
 import AIChatPanel from '../components/AIChatPanel'
+import ProcessingOverlay from '../components/ProcessingOverlay'
+import { useProcessingStore } from '../store/processing'
 import api from '../api/client'
 
 type Stage = 'idle' | 'recording' | 'stopped' | 'uploading' | 'processing' | 'done' | 'error'
@@ -16,8 +18,6 @@ const PROGRESS: Record<string, string> = {
   identifying_speakers: 'Matching voice profiles…',
   generating_insights: 'Generating AI insights…',
 }
-
-const STAGE_STEPS = ['idle', 'recording', 'stopped', 'processing', 'done'] as const
 
 const OVERLAP_CONFIRM_COUNT = 2
 const OVERLAP_COOLDOWN_MS = 4000
@@ -35,9 +35,33 @@ export default function RecordPage() {
   const cooldownUntilRef = useRef(0)
   const checkingRef = useRef(false)
 
-  const onDone = useCallback((data: any) => { setResult(data); setStage('done') }, [])
+  const { setProcessing, updateStage: updateProcStage, clearProcessing, stage: procStage, startedAt, source } = useProcessingStore()
+
+  const onDone = useCallback((data: any) => {
+    setResult(data)
+    setStage('done')
+    clearProcessing()
+  }, [clearProcessing])
+
   const jobData = useJobPoller(stage === 'processing' ? recordingId : null, onDone)
 
+  // Sync job progress → global processing store
+  useEffect(() => {
+    if (jobData?.progress) {
+      updateProcStage(jobData.progress as any)
+    }
+    if (jobData?.status === 'error') {
+      setStage('error')
+      clearProcessing()
+    }
+  }, [jobData?.progress, jobData?.status, updateProcStage, clearProcessing])
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => clearProcessing()
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Cross-talk detection
   useEffect(() => {
     if (stage !== 'recording') {
       overlapCountRef.current = 0
@@ -81,16 +105,20 @@ export default function RecordPage() {
 
   const handleSubmit = async () => {
     if (!recorder.audioBlob) return
-    setStage('uploading'); setUploadError(null)
+    setStage('uploading')
+    setUploadError(null)
+    setProcessing('record', 'uploading')
     try {
       const form = new FormData()
       form.append('file', recorder.audioBlob, 'recording.webm')
       const res = await api.post('/audio/record', form)
       setRecordingId(res.data.recording_id)
       setStage('processing')
+      updateProcStage('queued')
     } catch (e: any) {
       setUploadError(e.response?.data?.detail || 'Upload failed.')
       setStage('error')
+      clearProcessing()
     }
   }
 
@@ -100,9 +128,11 @@ export default function RecordPage() {
     setOverlapAlert(false)
     overlapCountRef.current = 0
     cooldownUntilRef.current = 0
+    clearProcessing()
   }
 
   const processing = stage === 'uploading' || stage === 'processing'
+  const isProcessingActive = useProcessingStore.getState().isProcessing && useProcessingStore.getState().source === 'record'
   const chatW = chatOpen ? '340px' : '48px'
   const isRecording = stage === 'recording'
 
@@ -110,7 +140,12 @@ export default function RecordPage() {
     <div style={{ display: 'grid', gridTemplateColumns: `1fr ${chatW}`, height: '100dvh', overflow: 'hidden', transition: 'grid-template-columns .25s ease' }}>
 
       {/* ── Center panel */}
-      <div className="center-panel">
+      <div className="center-panel" style={{ position: 'relative' }}>
+
+        {/* Processing overlay */}
+        {processing && (
+          <ProcessingOverlay stage={procStage} startedAt={startedAt} source={source} />
+        )}
 
         {/* Header */}
         <div className="panel-header" style={{ position: 'relative', overflow: 'hidden' }}>
@@ -120,7 +155,7 @@ export default function RecordPage() {
             background: isRecording
               ? 'linear-gradient(90deg, hsl(var(--destructive)), hsl(var(--accent)), hsl(var(--destructive)))'
               : stage === 'done'
-              ? 'hsl(130, 60%, 45%)'
+              ? 'hsl(var(--success))'
               : 'hsl(var(--accent))',
             backgroundSize: isRecording ? '200% 100%' : '100% 100%',
             animation: isRecording ? 'progress-shimmer 2s linear infinite' : 'none',
@@ -129,45 +164,57 @@ export default function RecordPage() {
 
           <div style={{
             width: '34px', height: '34px', borderRadius: '10px', flexShrink: 0,
-            background: isRecording ? 'hsl(var(--destructive) / .15)' : 'hsl(var(--accent) / .12)',
+            background: result ? 'hsl(var(--success) / .12)' : isRecording ? 'hsl(var(--destructive) / .15)' : 'hsl(var(--accent) / .12)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            border: `2px solid ${isRecording ? 'hsl(var(--destructive) / .4)' : 'hsl(var(--accent) / .3)'}`,
+            border: `2px solid ${result ? 'hsl(var(--success) / .3)' : isRecording ? 'hsl(var(--destructive) / .4)' : 'hsl(var(--accent) / .3)'}`,
             transition: 'all .3s'
           }}>
-            <Radio
-              size={16}
-              style={{ color: isRecording ? 'hsl(var(--destructive))' : 'hsl(var(--accent))', transition: 'all .3s' }}
-              className={isRecording ? 'animate-pulse-rec' : ''}
-            />
+            {result
+              ? <CheckCircle size={16} style={{ color: 'hsl(var(--success))' }} />
+              : <Radio
+                  size={16}
+                  style={{ color: isRecording ? 'hsl(var(--destructive))' : 'hsl(var(--accent))', transition: 'all .3s' }}
+                  className={isRecording ? 'animate-pulse-rec' : ''}
+                />}
           </div>
 
           <div style={{ flex: 1, minWidth: 0 }}>
-            <h1>Record Conversation</h1>
+            <h1>{result ? 'Transcript' : 'Record Conversation'}</h1>
             <p style={{ fontSize: '.82rem', color: 'hsl(var(--pencil))', fontFamily: 'Inter, sans-serif', fontWeight: 400, marginTop: '1px' }}>
-              Record first, then get transcription + speaker ID
+              {result ? `${result.transcript?.length ?? 0} segments` : 'Record first, then get transcription + speaker ID'}
             </p>
           </div>
 
           {result?.speakers_detected?.length > 0 && (
             <div className="animate-slide-in-right" style={{
               display: 'flex', alignItems: 'center', gap: '6px',
-              fontSize: '.8rem', color: 'hsl(var(--pencil))',
+              fontSize: '.8rem', color: 'hsl(var(--success))',
               padding: '.35rem .8rem',
-              background: 'hsl(130, 60%, 45% / .12)',
+              background: 'hsl(var(--success) / .12)',
               borderRadius: '999px',
-              border: '1.5px solid hsl(130, 60%, 45% / .3)',
+              border: '1.5px solid hsl(var(--success) / .3)',
               fontFamily: 'Inter, sans-serif',
-              fontWeight: 500,
+              fontWeight: 600,
               flexShrink: 0
             }}>
-              <Users size={13} style={{ color: 'hsl(130, 60%, 45%)' }} />
+              <Users size={13} style={{ color: 'hsl(var(--success))' }} />
               <span>{result.speakers_detected.join(', ')}</span>
             </div>
           )}
+
+          {result && (
+            <button
+              className="btn btn-ghost animate-bounce-in"
+              onClick={handleReset}
+              style={{ flexShrink: 0, fontSize: '.82rem', padding: '.4rem .85rem' }}
+            >
+              <RotateCcw size={14} /> New Recording
+            </button>
+          )}
         </div>
 
-        {/* Recording Section */}
-        <div style={{
+        {/* Recording Section — hidden after results arrive */}
+        {!result && (<div style={{
           padding: '1.75rem 2rem',
           borderBottom: '2px dashed hsl(var(--border))',
           display: 'flex',
@@ -195,10 +242,10 @@ export default function RecordPage() {
             fontSize: '2.8rem',
             fontWeight: 700,
             fontFamily: 'JetBrains Mono, monospace',
-            color: isRecording ? 'hsl(var(--destructive))' : stage === 'done' ? 'hsl(130, 60%, 45%)' : 'hsl(var(--pencil))',
+            color: isRecording ? 'hsl(var(--destructive))' : stage === 'done' ? 'hsl(var(--success))' : 'hsl(var(--pencil))',
             letterSpacing: '.08em',
             lineHeight: 1,
-            textShadow: isRecording ? '0 0 24px hsl(var(--destructive) / .3)' : 'none',
+            textShadow: isRecording ? '0 0 28px hsl(var(--destructive) / .4)' : stage === 'done' ? '0 0 20px hsl(var(--success) / .3)' : 'none',
             transition: 'all .3s'
           }}>
             {recorder.formattedDuration}
@@ -244,20 +291,6 @@ export default function RecordPage() {
               }}>
                 <AlertTriangle size={14} />
                 Cross-talk detected — please speak one at a time
-              </div>
-            )}
-
-            {processing && (
-              <div className="animate-fade-in" style={{
-                display: 'flex', alignItems: 'center', gap: '10px',
-                justifyContent: 'center',
-                color: 'hsl(var(--accent))',
-                fontSize: '.9rem',
-                fontFamily: 'Inter, sans-serif',
-                fontWeight: 500
-              }}>
-                <Loader size={16} className="spin" />
-                {stage === 'uploading' ? 'Uploading…' : (PROGRESS[jobData?.progress || ''] || 'Processing…')}
               </div>
             )}
 
@@ -339,7 +372,7 @@ export default function RecordPage() {
               />
             </div>
           )}
-        </div>
+        </div>)}
 
         {/* Transcript */}
         <div style={{

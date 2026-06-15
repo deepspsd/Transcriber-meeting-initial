@@ -39,7 +39,7 @@ _overlap_device: str = "cpu"
 def _load_overlap_model() -> OverlapModel | None:
     """Load the Wav2Vec2-based overlap classifier. Returns None if unavailable."""
     model_path = settings.OVERLAP_MODEL_PATH
-    if not os.path.isfile(model_path):
+    if not os.path.exists(model_path):
         logger.warning(
             f"[OverlapModel] Model file not found at '{model_path}'. "
             "Cross-talk detection endpoint will return 503. "
@@ -48,7 +48,7 @@ def _load_overlap_model() -> OverlapModel | None:
         return None
     try:
         m = OverlapModel()
-        m.load_state_dict(torch.load(model_path, map_location="cpu"))
+        m.load_state_dict(torch.load(model_path, map_location="cpu", weights_only=False))
         m.eval()
         logger.info(f"[OverlapModel] Loaded from '{model_path}' ✓")
         return m

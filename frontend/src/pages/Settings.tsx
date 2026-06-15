@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Settings, Mic, Trash2, Pencil, Save, Loader, Sliders, Sparkles, User } from 'lucide-react'
+import { Settings, Mic, Trash2, Pencil, Save, Loader, Sliders, Sparkles, User, CheckCircle } from 'lucide-react'
 import api from '../api/client'
 
 interface Profile {
@@ -74,42 +74,33 @@ export default function SettingsPage() {
   ]
 
   return (
-    <div style={{
-      flex: 1, overflowY: 'auto',
-      padding: '2.5rem 2.5rem 4rem',
-      maxWidth: '860px', margin: '0 auto', width: '100%',
-      background: 'hsl(var(--paper) / .4)'
-    }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
 
-      {/* Page title */}
-      <div className="animate-slide-up" style={{ marginBottom: '3rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-          <div style={{
-            width: '48px', height: '48px', borderRadius: '12px',
-            background: 'hsl(var(--accent) / .12)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            border: '2px solid hsl(var(--accent) / .3)',
-          }}>
-            <Settings size={24} style={{ color: 'hsl(var(--accent))' }} />
-          </div>
-          <div>
-            <h1 style={{
-              fontSize: '1.8rem', fontWeight: 800,
-              fontFamily: 'Inter, sans-serif',
-              color: 'hsl(var(--ink))',
-              lineHeight: 1, marginBottom: '.3rem', letterSpacing: '-.02em'
-            }}>
-              Settings
-            </h1>
-            <p style={{ color: 'hsl(var(--pencil))', fontSize: '.9rem', fontFamily: 'Inter, sans-serif' }}>
-              Manage voice profiles and recognition thresholds
-            </p>
-          </div>
+      {/* Panel Header */}
+      <div className="panel-header">
+        <div style={{
+          width: '34px', height: '34px', borderRadius: '10px', flexShrink: 0,
+          background: 'hsl(var(--accent) / .12)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          border: '2px solid hsl(var(--accent) / .3)',
+        }}>
+          <Settings size={16} style={{ color: 'hsl(var(--accent))' }} />
+        </div>
+        <div style={{ flex: 1 }}>
+          <h1>Settings</h1>
+          <p style={{ fontSize: '.82rem', color: 'hsl(var(--pencil))', fontFamily: 'Inter, sans-serif', fontWeight: 400, marginTop: '1px' }}>
+            Voice profiles &amp; recognition thresholds
+          </p>
         </div>
       </div>
 
+      {/* Scrollable content */}
+      <div className="page-wrapper">
+
+      {/* Page title - REMOVED, now in panel-header */}
+
       {/* ─── Voice Profiles ─── */}
-      <section className="animate-slide-up" style={{ marginBottom: '3.5rem', animationDelay: '0.1s', animationFillMode: 'both' }}>
+      <section className="animate-slide-up" style={{ marginBottom: '2.5rem', animationDelay: '0.05s', animationFillMode: 'both' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.5rem' }}>
           <div style={{
             width: '36px', height: '36px', borderRadius: '9px',
@@ -341,17 +332,18 @@ export default function SettingsPage() {
           </div>
 
           <button
-            className="btn btn-primary"
+            className={`btn ${settingsSaved ? 'btn-success' : 'btn-primary'}`}
             onClick={handleSaveSettings}
             disabled={savingSettings}
-            style={{ marginTop: '1.25rem', padding: '.7rem 1.5rem', fontSize: '.95rem' }}
+            style={{ marginTop: '1.5rem', padding: '.75rem 1.75rem', fontSize: '.95rem' }}
             id="save-settings-btn"
           >
-            {savingSettings ? <Loader size={16} className="spin" /> : <Save size={16} />}
-            {settingsSaved ? '✓ Saved!' : savingSettings ? 'Saving…' : 'Save Settings'}
+            {savingSettings ? <Loader size={16} className="spin" /> : settingsSaved ? <CheckCircle size={16} /> : <Save size={16} />}
+            {settingsSaved ? 'Settings Saved!' : savingSettings ? 'Saving…' : 'Save Settings'}
           </button>
         </section>
       )}
+      </div>
     </div>
   )
 }

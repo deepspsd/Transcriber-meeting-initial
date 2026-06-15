@@ -45,6 +45,7 @@ backend/uploads/
 # ML Models
 backend/overlap_model/
 overlap_model/
+backend/overlap_model.pth
 
 # IDE & Editor Files
 .vscode/
