@@ -186,7 +186,7 @@ function Hero() {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="mb-6"
+        className="mb-6 mt-10"
       >
         <span className="badge badge-yellow">
           <Sparkles size={12} />
@@ -203,9 +203,9 @@ function Hero() {
         style={{ filter: "url(#lp-squiggle-soft)" }}
       >
         Transcribe{" "}
-        <span className="text-accent scribble-underline">Voices</span>
+        <span className="text-accent scribble-underline">Your Meetings</span>
         <br />
-        Into Clarity.
+        Into Insights.
       </motion.h1>
 
       {/* Sub */}
@@ -215,7 +215,7 @@ function Hero() {
         transition={{ duration: 0.6, delay: 0.25 }}
         className="font-hand text-xl text-pencil max-w-xl mb-8 leading-relaxed"
       >
-        VoiceSum turns messy conversations into structured transcripts, speaker
+        VoiceSum turns your conversations into structured transcripts, speaker
         maps, and AI-generated summaries. Built for the humans who think in
         spoken words.
       </motion.p>
@@ -792,46 +792,155 @@ function BlueprintFooter() {
 
 // ─── 13. Navbar ───────────────────────────────────────────────────────────
 function Navbar() {
+  const [scrolled, setScrolled] = React.useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
-    <nav className="sticky top-0 z-50 flex items-center justify-between px-6 py-3 border-b-2 border-ink/30 bg-background/80 backdrop-blur-sm">
-      <Link to="/" className="flex items-center gap-2">
-        <div style={{ position: 'relative' }}>
-          <Zap
-            size={22}
-            fill="currentColor"
-            className="text-accent animate-float"
-          />
-          <span style={{
-            position: 'absolute', top: -2, right: -2,
-            width: 6, height: 6, borderRadius: '50%',
-            background: 'hsl(var(--accent))',
-            boxShadow: '0 0 5px hsl(var(--accent))',
-          }} className="animate-pulse-rec" />
+    <div
+      style={{
+        position: "sticky", top: 0, zIndex: 50,
+        display: "flex", justifyContent: "center",
+        padding: scrolled ? "10px 16px" : "14px 16px",
+        background: scrolled ? "hsl(var(--background) / .7)" : "transparent",
+        backdropFilter: scrolled ? "blur(20px)" : "none",
+        WebkitBackdropFilter: scrolled ? "blur(20px)" : "none",
+        borderBottom: scrolled ? "1px solid hsl(var(--ink) / .07)" : "none",
+        transition: "all .35s cubic-bezier(0.4,0,0.2,1)",
+      }}
+    >
+      <nav
+        style={{
+          display: "grid",
+          gridTemplateColumns: "auto 1fr auto",
+          alignItems: "center",
+          width: "100%", maxWidth: scrolled ? "860px" : "1080px",
+          padding: scrolled ? "8px 16px 8px 12px" : "10px 20px 10px 14px",
+          borderRadius: "999px",
+          background: scrolled
+            ? "hsl(var(--card) / .92)"
+            : "hsl(var(--card) / .6)",
+          border: "1.5px solid hsl(var(--ink) / .1)",
+          boxShadow: scrolled
+            ? "0 8px 32px hsl(var(--ink) / .1), 0 1px 4px hsl(var(--ink) / .06), inset 0 1px 0 hsl(255,100%,100% / .08)"
+            : "0 2px 16px hsl(var(--ink) / .07), inset 0 1px 0 hsl(255,100%,100% / .06)",
+          backdropFilter: "blur(20px)",
+          WebkitBackdropFilter: "blur(20px)",
+          transition: "all .35s cubic-bezier(0.4,0,0.2,1)",
+        }}
+      >
+        {/* Logo */}
+        <Link to="/" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}>
+          <div style={{ position: "relative" }}>
+            <Zap
+              size={22}
+              fill="currentColor"
+              className="text-accent animate-float"
+            />
+            <span style={{
+              position: "absolute", top: -2, right: -2,
+              width: 6, height: 6, borderRadius: "50%",
+              background: "hsl(var(--accent))",
+              boxShadow: "0 0 5px hsl(var(--accent))",
+            }} className="animate-pulse-rec" />
+          </div>
+          <span className="font-display text-2xl font-bold text-ink">
+            Voice<span className="text-accent">Sum</span>
+          </span>
+        </Link>
+
+        {/* Center nav links — truly centered via 1fr column + mx-auto */}
+        <div className="hidden md:flex items-center justify-center" style={{ gap: 2 }}>
+          {[
+            { label: "Features", href: "#features" },
+            { label: "How It Works", href: "#process" },
+            { label: "Pricing", href: "#pricing" },
+          ].map((item) => (
+            <a
+              key={item.label}
+              href={item.href}
+              className="font-hand"
+              style={{
+                fontSize: "1rem", fontWeight: 600,
+                color: "hsl(var(--pencil))",
+                textDecoration: "none",
+                padding: "6px 14px",
+                borderRadius: "999px",
+                transition: "all .18s",
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLElement).style.color = "hsl(var(--accent))";
+                (e.currentTarget as HTMLElement).style.background = "hsl(var(--accent) / .09)";
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLElement).style.color = "hsl(var(--pencil))";
+                (e.currentTarget as HTMLElement).style.background = "transparent";
+              }}
+            >
+              {item.label}
+            </a>
+          ))}
         </div>
-        <span className="font-display text-2xl font-bold text-ink">
-          Voice<span className="text-accent">Sum</span>
-        </span>
-      </Link>
 
-      <div className="hidden md:flex items-center gap-6 font-hand text-pencil">
-        <a href="#features" className="hover:text-accent transition-colors">Features</a>
-        <a href="#process" className="hover:text-accent transition-colors">How It Works</a>
-        <a href="#pricing" className="hover:text-accent transition-colors">Pricing</a>
-      </div>
-
-      <div className="flex items-center gap-3">
-        <Link to="/login">
-          <SketchButton variant="ghost" className="text-sm px-4 py-2">
-            Sign In
-          </SketchButton>
-        </Link>
-        <Link to="/signup">
-          <SketchButton variant="primary" className="text-sm px-4 py-2">
-            Start Free →
-          </SketchButton>
-        </Link>
-      </div>
-    </nav>
+        {/* CTAs */}
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <Link to="/login" style={{ textDecoration: "none" }}>
+            <button
+              className="font-hand"
+              style={{
+                fontWeight: 700, fontSize: ".93rem",
+                padding: "7px 18px", borderRadius: "999px",
+                border: "1.5px solid hsl(var(--ink) / .14)",
+                background: "transparent",
+                color: "hsl(var(--ink))",
+                cursor: "pointer",
+                transition: "all .18s",
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLElement).style.background = "hsl(var(--ink) / .06)";
+                (e.currentTarget as HTMLElement).style.borderColor = "hsl(var(--ink) / .25)";
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLElement).style.background = "transparent";
+                (e.currentTarget as HTMLElement).style.borderColor = "hsl(var(--ink) / .14)";
+              }}
+            >
+              Sign In
+            </button>
+          </Link>
+          <Link to="/signup" style={{ textDecoration: "none" }}>
+            <button
+              className="font-hand"
+              style={{
+                fontWeight: 700, fontSize: ".93rem",
+                padding: "7px 20px", borderRadius: "999px",
+                border: "none",
+                background: "linear-gradient(135deg, hsl(var(--accent)), hsl(var(--accent) / .75))",
+                color: "white",
+                cursor: "pointer",
+                boxShadow: "0 2px 14px hsl(var(--accent) / .38)",
+                transition: "all .18s",
+                display: "flex", alignItems: "center", gap: 5,
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLElement).style.transform = "translateY(-1px)";
+                (e.currentTarget as HTMLElement).style.boxShadow = "0 6px 22px hsl(var(--accent) / .48)";
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLElement).style.transform = "translateY(0)";
+                (e.currentTarget as HTMLElement).style.boxShadow = "0 2px 14px hsl(var(--accent) / .38)";
+              }}
+            >
+              Start Free →
+            </button>
+          </Link>
+        </div>
+      </nav>
+    </div>
   );
 }
 
