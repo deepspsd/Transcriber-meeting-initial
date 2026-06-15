@@ -53,7 +53,13 @@ export default function VoiceRecorder({ label = 'self', sampleIndex = 0, onSampl
       </div>
 
       {/* Timer */}
-      <div style={{ textAlign: 'center', fontSize: '1.6rem', fontWeight: 700, fontFamily: 'JetBrains Mono, monospace', color: state === 'recording' ? 'var(--accent-danger)' : 'var(--text-secondary)', marginBottom: '1rem' }}>
+      <div style={{
+        textAlign: 'center',
+        fontSize: '1.6rem', fontWeight: 700,
+        fontFamily: 'JetBrains Mono, monospace',
+        color: state === 'recording' ? 'hsl(var(--destructive))' : 'hsl(var(--pencil))',
+        marginBottom: '1rem'
+      }}>
         {formattedDuration}
       </div>
 
@@ -95,13 +101,28 @@ export default function VoiceRecorder({ label = 'self', sampleIndex = 0, onSampl
       {/* Audio preview */}
       {audioUrl && state === 'stopped' && (
         <div style={{ marginTop: '1rem' }}>
-          <audio src={audioUrl} controls style={{ width: '100%', height: '36px', accentColor: 'var(--accent)' }} />
+          <audio
+            src={audioUrl}
+            controls
+            style={{
+              width: '100%', height: '36px',
+              accentColor: 'hsl(var(--accent))',
+              borderRadius: '8px'
+            }}
+          />
         </div>
       )}
 
       {/* Errors */}
       {(error || uploadError) && (
-        <div style={{ marginTop: '0.75rem', display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--accent-danger)', fontSize: '0.82rem' }}>
+        <div style={{
+          marginTop: '0.75rem',
+          display: 'flex', alignItems: 'center', gap: '6px',
+          color: 'hsl(var(--destructive))',
+          fontSize: '0.82rem',
+          fontFamily: 'Inter, sans-serif',
+          fontWeight: 500
+        }}>
           <AlertTriangle size={14} /> {error || uploadError}
         </div>
       )}

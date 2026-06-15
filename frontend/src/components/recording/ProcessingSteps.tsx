@@ -22,7 +22,11 @@ export default function ProcessingSteps({ steps }: ProcessingStepsProps) {
         margin: '0 auto',
       }}
     >
-      <h3 style={{ fontSize: '1rem', fontWeight: 700, textAlign: 'center', color: 'var(--text-primary)' }}>
+      <h3 style={{
+        fontSize: '1rem', fontWeight: 700, textAlign: 'center',
+        color: 'hsl(var(--ink))',
+        fontFamily: 'Inter, sans-serif'
+      }}>
         Processing Recording
       </h3>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -34,16 +38,16 @@ export default function ProcessingSteps({ steps }: ProcessingStepsProps) {
               alignItems: 'center',
               gap: '12px',
               padding: '12px',
-              background: step.status === 'active' ? 'var(--accent-subtle)' : 'transparent',
-              borderRadius: 'var(--radius-sm)',
+              background: step.status === 'active' ? 'hsl(var(--accent) / .08)' : 'transparent',
+              borderRadius: '10px',
               transition: 'all 0.3s ease',
             }}
           >
             {step.status === 'complete' && (
-              <CheckCircle size={20} style={{ color: 'var(--success)', flexShrink: 0 }} />
+              <CheckCircle size={20} style={{ color: 'hsl(130, 60%, 45%)', flexShrink: 0 }} />
             )}
             {step.status === 'active' && (
-              <Loader size={20} style={{ color: 'var(--accent)', flexShrink: 0 }} className="spin" />
+              <Loader size={20} style={{ color: 'hsl(var(--accent))', flexShrink: 0 }} className="spin" />
             )}
             {step.status === 'pending' && (
               <div
@@ -51,7 +55,7 @@ export default function ProcessingSteps({ steps }: ProcessingStepsProps) {
                   width: '20px',
                   height: '20px',
                   borderRadius: '50%',
-                  border: '2px solid var(--bg-border)',
+                  border: '2px solid hsl(var(--ink) / .2)',
                   flexShrink: 0,
                 }}
               />
@@ -60,7 +64,8 @@ export default function ProcessingSteps({ steps }: ProcessingStepsProps) {
               style={{
                 fontSize: '0.875rem',
                 fontWeight: step.status === 'active' ? 600 : 400,
-                color: step.status === 'pending' ? 'var(--text-muted)' : 'var(--text-primary)',
+                color: step.status === 'pending' ? 'hsl(var(--pencil))' : 'hsl(var(--ink))',
+                fontFamily: 'Inter, sans-serif'
               }}
             >
               {step.label}

@@ -72,8 +72,19 @@ export default function Setup() {
       <div style={{ width: '100%', maxWidth: '560px', margin: '0 auto' }} className="fade-in">
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <h1 style={{ fontSize: '1.5rem', fontWeight: 800 }}>Set Up Your Voice Profile</h1>
-          <p style={{ color: 'var(--text-secondary)', marginTop: '0.4rem', fontSize: '0.9rem' }}>
+          <h1 style={{
+            fontSize: '1.5rem', fontWeight: 800,
+            fontFamily: 'Inter, sans-serif',
+            color: 'hsl(var(--ink))',
+            lineHeight: 1.1, marginBottom: '.4rem'
+          }}>
+            Set Up Your Voice Profile
+          </h1>
+          <p style={{
+            color: 'hsl(var(--pencil))',
+            marginTop: '0.4rem', fontSize: '0.9rem',
+            fontFamily: 'Inter, sans-serif'
+          }}>
             Record 1–3 voice samples so VoiceSum can identify you in conversations.
           </p>
         </div>
@@ -85,16 +96,33 @@ export default function Setup() {
               key={i}
               onClick={() => setStep(i)}
               style={{
-                flex: 1, padding: '0.6rem 0.5rem', borderRadius: '10px', border: 'none', cursor: 'pointer',
-                background: step === i ? 'var(--accent)' : 'var(--bg-elevated)',
-                color: step === i ? '#fff' : 'var(--text-secondary)',
+                flex: 1, padding: '0.6rem 0.5rem',
+                borderRadius: '10px 14px 12px 16px / 14px 10px 16px 12px',
+                border: step === i
+                  ? '2px solid hsl(var(--accent))'
+                  : stepDone(i)
+                  ? '2px solid hsl(130, 60%, 45% / .4)'
+                  : '1.5px dashed hsl(var(--ink) / .15)',
+                cursor: 'pointer',
+                background: step === i
+                  ? 'hsl(var(--accent) / .1)'
+                  : stepDone(i)
+                  ? 'hsl(130, 60%, 45% / .08)'
+                  : 'hsl(var(--card))',
+                color: step === i
+                  ? 'hsl(var(--accent))'
+                  : stepDone(i)
+                  ? 'hsl(130, 60%, 45%)'
+                  : 'hsl(var(--pencil))',
                 fontSize: '0.78rem', fontWeight: 600,
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
                 transition: 'all 0.18s',
                 position: 'relative',
+                fontFamily: 'Inter, sans-serif',
+                boxShadow: step === i ? '0 2px 8px hsl(var(--accent) / .12)' : 'none'
               }}
             >
-              {stepDone(i) && <CheckCircle size={12} style={{ color: step === i ? '#fff' : 'var(--accent-success)' }} />}
+              {stepDone(i) && <CheckCircle size={12} style={{ color: step === i ? 'hsl(var(--accent))' : 'hsl(130, 60%, 45%)' }} />}
               {s.title}
             </button>
           ))}
@@ -103,15 +131,35 @@ export default function Setup() {
         {/* Current step */}
         <div className="glass" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1rem' }}>
-            <div style={{ color: 'var(--accent)' }}>{STEPS[step].icon}</div>
-            <h2 style={{ fontWeight: 700, fontSize: '1.05rem' }}>{STEPS[step].title}</h2>
+            <div style={{ color: 'hsl(var(--accent))' }}>{STEPS[step].icon}</div>
+            <h2 style={{
+              fontWeight: 700, fontSize: '1.05rem',
+              fontFamily: 'Inter, sans-serif',
+              color: 'hsl(var(--ink))'
+            }}>
+              {STEPS[step].title}
+            </h2>
             {step === 2 && <span className="badge badge-yellow">Optional</span>}
           </div>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: STEPS[step].script ? '1rem' : '1.25rem' }}>
+          <p style={{
+            color: 'hsl(var(--pencil))',
+            fontSize: '0.875rem',
+            marginBottom: STEPS[step].script ? '1rem' : '1.25rem',
+            fontFamily: 'Inter, sans-serif'
+          }}>
             {STEPS[step].instruction}
           </p>
           {STEPS[step].script && (
-            <div style={{ background: 'var(--bg-elevated)', border: '1px solid var(--bg-border)', borderRadius: '10px', padding: '1rem', marginBottom: '1.25rem', fontStyle: 'italic', color: 'var(--text-primary)', fontSize: '0.9rem', lineHeight: 1.7 }}>
+            <div style={{
+              background: 'hsl(var(--muted))',
+              border: '1.5px solid hsl(var(--ink) / .1)',
+              borderRadius: '10px',
+              padding: '1rem', marginBottom: '1.25rem',
+              fontStyle: 'italic',
+              color: 'hsl(var(--ink))',
+              fontSize: '0.9rem', lineHeight: 1.7,
+              fontFamily: 'Inter, sans-serif'
+            }}>
               {STEPS[step].script}
             </div>
           )}
@@ -136,7 +184,7 @@ export default function Setup() {
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '8px' }}>
             {/* Label */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Profile name:</label>
+              <label style={{ fontSize: '0.8rem', color: 'hsl(var(--pencil))' }}>Profile name:</label>
               <input
                 className="input"
                 placeholder={user?.name || 'Your Name'}
@@ -154,14 +202,29 @@ export default function Setup() {
               {submitting ? <Loader size={15} className="spin" /> : <CheckCircle size={15} />}
               {submitting ? 'Saving…' : 'Complete Setup'}
             </button>
-            {error && <div style={{ color: 'var(--accent-danger)', fontSize: '0.82rem' }}>{error}</div>}
+            {error && (
+              <div style={{
+                color: 'hsl(var(--destructive))',
+                fontSize: '0.82rem',
+                fontFamily: 'Inter, sans-serif',
+                fontWeight: 500
+              }}>
+                {error}
+              </div>
+            )}
           </div>
         </div>
 
         {/* Skip */}
         <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>
           <button
-            style={{ background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '0.82rem', cursor: 'pointer', textDecoration: 'underline' }}
+            style={{
+              background: 'none', border: 'none',
+              color: 'hsl(var(--pencil))',
+              fontSize: '0.82rem', cursor: 'pointer',
+              textDecoration: 'underline',
+              fontFamily: 'Inter, sans-serif'
+            }}
             onClick={() => navigate('/dashboard')}
           >
             Skip for now (speaker identification will be limited)

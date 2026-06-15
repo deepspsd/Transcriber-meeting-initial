@@ -47,7 +47,8 @@ export default function SessionCard({
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
             marginBottom: '8px',
-            color: 'var(--text-primary)',
+            color: 'hsl(var(--ink))',
+            fontFamily: 'Inter, sans-serif'
           }}
         >
           {filename}
@@ -56,17 +57,23 @@ export default function SessionCard({
           <p
             style={{
               fontSize: '0.85rem',
-              color: 'var(--text-secondary)',
+              color: 'hsl(var(--pencil))',
               marginBottom: '10px',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
               whiteSpace: 'nowrap',
+              fontFamily: 'Inter, sans-serif'
             }}
           >
             {summary}
           </p>
         )}
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+        <div style={{
+          display: 'flex', flexWrap: 'wrap', gap: '12px',
+          fontSize: '0.8rem',
+          color: 'hsl(var(--pencil))',
+          fontFamily: 'Inter, sans-serif'
+        }}>
           <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
             <Clock size={13} /> {date}
           </span>
@@ -95,7 +102,7 @@ export default function SessionCard({
         >
           {isDeleting ? <Loader size={16} className="spin" /> : <Trash2 size={16} />}
         </button>
-        <ChevronRight size={18} style={{ color: 'var(--text-muted)' }} />
+        <ChevronRight size={18} style={{ color: 'hsl(var(--pencil))' }} />
       </div>
     </div>
   )

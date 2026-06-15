@@ -48,19 +48,20 @@ export default function SpeakerLabel({ speaker, color, onRename, editable = fals
             padding: '4px 8px',
             fontSize: '0.75rem',
             fontWeight: 700,
-            background: 'var(--bg-elevated)',
-            border: '1px solid var(--accent)',
+            background: 'hsl(var(--card))',
+            border: '1.5px solid hsl(var(--accent))',
             borderRadius: '6px',
-            color: 'var(--text-primary)',
+            color: 'hsl(var(--ink))',
             outline: 'none',
             width: '120px',
+            fontFamily: 'Inter, sans-serif'
           }}
         />
         <button onClick={handleSave} className="icon-btn" style={{ width: '24px', height: '24px' }}>
-          <Check size={14} style={{ color: 'var(--success)' }} />
+          <Check size={14} style={{ color: 'hsl(130, 60%, 45%)' }} />
         </button>
         <button onClick={handleCancel} className="icon-btn" style={{ width: '24px', height: '24px' }}>
-          <X size={14} style={{ color: 'var(--danger)' }} />
+          <X size={14} style={{ color: 'hsl(var(--destructive))' }} />
         </button>
       </div>
     )
