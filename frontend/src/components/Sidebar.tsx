@@ -2,13 +2,14 @@ import { NavLink, useNavigate } from 'react-router-dom'
 import {
   Mic, Upload, History, UserPlus, Settings,
   LogOut, Zap, PanelLeftClose, PanelLeftOpen,
-  Sun, Moon,
+  Sun, Moon, MonitorSpeaker,
 } from 'lucide-react'
 import { useAuthStore } from '../store/auth'
 import { useUIStore } from '../store/ui'
 
 const NAV = [
   { to: '/dashboard', icon: Mic, label: 'Record', end: true },
+  { to: '/dashboard/tab-audio', icon: MonitorSpeaker, label: 'Tab Audio' },
   { to: '/dashboard/upload', icon: Upload, label: 'Upload' },
   { to: '/dashboard/history', icon: History, label: 'History' },
 ]
@@ -25,33 +26,22 @@ export default function Sidebar() {
 
   const tip = (label: string) => collapsed ? label : undefined
 
+  const avatarLetter = user?.name?.charAt(0).toUpperCase() ?? '?'
+
   return (
     <aside className="sidebar" style={{ position: 'relative' }}>
-      {/* Decorative corner tape */}
-      <div style={{
-        position: 'absolute',
-        top: '12px',
-        right: '-2px',
-        width: '40px',
-        height: '20px',
-        background: 'hsl(var(--sticky-yellow) / .6)',
-        border: '1.5px dashed hsl(var(--ink) / .3)',
-        transform: 'rotate(45deg)',
-        zIndex: 10,
-        pointerEvents: 'none'
-      }} />
-      
+
       {/* Logo */}
-      <div className="sidebar-logo" style={{ position: 'relative' }}>
-        <Zap 
-          size={22} 
-          fill="currentColor" 
-          style={{ color: 'hsl(var(--accent))', flexShrink: 0 }} 
+      <div className="sidebar-logo" style={{ position: 'relative', borderBottom: '1.5px dashed hsl(var(--sidebar-border) / .4)', paddingBottom: '.85rem', marginBottom: '.5rem' }}>
+        <Zap
+          size={22}
+          fill="currentColor"
+          style={{ color: 'hsl(var(--accent))', flexShrink: 0 }}
           className="animate-float"
         />
         {!collapsed && (
-          <span style={{ 
-            overflow: 'hidden', 
+          <span style={{
+            overflow: 'hidden',
             whiteSpace: 'nowrap',
             fontSize: '1.7rem'
           }}>
@@ -61,7 +51,9 @@ export default function Sidebar() {
       </div>
 
       {/* Main nav */}
-      {!collapsed && <div className="nav-section">Workspace</div>}
+      {!collapsed && (
+        <div className="nav-section">Workspace</div>
+      )}
       {NAV.map(({ to, icon: Icon, label, end }) => (
         <NavLink
           key={to} to={to} end={end}
@@ -89,68 +81,90 @@ export default function Sidebar() {
 
       <div style={{ flex: 1 }} />
 
-      {/* Theme toggle */}
-      <button className="nav-item" onClick={toggleTheme} title={theme === 'dark' ? 'Light mode' : 'Dark mode'}>
-        {theme === 'dark'
-          ? <Sun size={16} className="nav-icon" />
-          : <Moon size={16} className="nav-icon" />}
-        {!collapsed && <span className="nav-label">{theme === 'dark' ? 'Light mode' : 'Dark mode'}</span>}
-      </button>
+      {/* Bottom section */}
+      <div style={{ padding: '0 .5rem', display: 'flex', flexDirection: 'column', gap: '2px' }}>
 
-      {/* Collapse toggle */}
-      <button className="sidebar-collapse-btn" onClick={toggleSidebar} title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}>
-        {collapsed
-          ? <PanelLeftOpen size={16} />
-          : <PanelLeftClose size={16} />}
-      </button>
+        {/* Theme toggle */}
+        <button className="nav-item" onClick={toggleTheme} title={collapsed ? (theme === 'dark' ? 'Light mode' : 'Dark mode') : undefined}>
+          {theme === 'dark'
+            ? <Sun size={16} className="nav-icon" />
+            : <Moon size={16} className="nav-icon" />}
+          {!collapsed && <span className="nav-label">{theme === 'dark' ? 'Light mode' : 'Dark mode'}</span>}
+        </button>
 
-      <div className="nav-divider" />
+        {/* Collapse toggle */}
+        <button
+          className="sidebar-collapse-btn"
+          onClick={toggleSidebar}
+          title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          style={{ width: '100%', margin: '1px 0' }}
+        >
+          {collapsed
+            ? <PanelLeftOpen size={16} />
+            : <PanelLeftClose size={16} />}
+        </button>
 
-      {/* User */}
-      {!collapsed && (
-        <div style={{ 
-          padding: '.5rem 1rem', 
-          fontSize: '.8rem', 
-          color: 'hsl(var(--pencil))', 
-          overflow: 'hidden', 
-          textOverflow: 'ellipsis', 
-          whiteSpace: 'nowrap',
-          fontFamily: 'Inter, sans-serif',
-          fontWeight: 500,
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px'
-        }}>
+        <div className="nav-divider" />
+
+        {/* User */}
+        {!collapsed ? (
           <div style={{
-            width: '28px',
-            height: '28px',
+            padding: '.6rem .75rem',
+            display: 'flex', alignItems: 'center', gap: '10px',
+            borderRadius: '10px',
+            background: 'hsl(var(--sidebar-accent))',
+            margin: '2px 0'
+          }}>
+            <div style={{
+              width: '30px', height: '30px',
+              borderRadius: '50%',
+              background: 'hsl(var(--accent) / .2)',
+              border: '2px solid hsl(var(--accent) / .5)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: '.8rem', fontWeight: 700,
+              color: 'hsl(var(--accent))',
+              flexShrink: 0,
+              fontFamily: 'Inter, sans-serif'
+            }}>
+              {avatarLetter}
+            </div>
+            <span style={{
+              overflow: 'hidden', textOverflow: 'ellipsis',
+              fontSize: '.82rem', fontWeight: 500,
+              color: 'hsl(var(--sidebar-foreground))',
+              fontFamily: 'Inter, sans-serif',
+              flex: 1, minWidth: 0, whiteSpace: 'nowrap'
+            }}>
+              {user?.name}
+            </span>
+          </div>
+        ) : (
+          <div title={user?.name ?? ''} style={{
+            margin: '4px auto',
+            width: '30px', height: '30px',
             borderRadius: '50%',
             background: 'hsl(var(--accent) / .2)',
-            border: '2px solid hsl(var(--accent))',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '.75rem',
-            fontWeight: 700,
+            border: '2px solid hsl(var(--accent) / .5)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '.8rem', fontWeight: 700,
             color: 'hsl(var(--accent))',
-            flexShrink: 0
+            cursor: 'default',
+            fontFamily: 'Inter, sans-serif'
           }}>
-            {user?.name?.charAt(0).toUpperCase()}
+            {avatarLetter}
           </div>
-          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
-            {user?.name}
-          </span>
-        </div>
-      )}
-      <button
-        className="nav-item"
-        style={{ color: 'hsl(var(--destructive))' }}
-        onClick={() => { logout(); navigate('/login') }}
-        title={tip('Logout')}
-      >
-        <LogOut size={16} className="nav-icon" />
-        {!collapsed && <span className="nav-label">Logout</span>}
-      </button>
+        )}
+
+        <button
+          className="nav-item"
+          style={{ color: 'hsl(var(--destructive))', margin: '2px 0' }}
+          onClick={() => { logout(); navigate('/login') }}
+          title={tip('Logout')}
+        >
+          <LogOut size={16} className="nav-icon" />
+          {!collapsed && <span className="nav-label">Logout</span>}
+        </button>
+      </div>
     </aside>
   )
 }

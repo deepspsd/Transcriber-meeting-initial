@@ -17,10 +17,9 @@ const PROGRESS: Record<string, string> = {
   generating_insights: 'Generating AI insights…',
 }
 
-// ── Cross-talk detection parameters ───────────────────────────
-// Require this many consecutive positive detections before showing alert
+const STAGE_STEPS = ['idle', 'recording', 'stopped', 'processing', 'done'] as const
+
 const OVERLAP_CONFIRM_COUNT = 2
-// After showing an alert, suppress new alerts for this many ms
 const OVERLAP_COOLDOWN_MS = 4000
 
 export default function RecordPage() {
@@ -32,64 +31,45 @@ export default function RecordPage() {
   const [chatOpen, setChatOpen] = useState(true)
   const [overlapAlert, setOverlapAlert] = useState(false)
 
-  // Smoothing state — not stored in React state to avoid re-render churn
   const overlapCountRef = useRef(0)
   const cooldownUntilRef = useRef(0)
-  const checkingRef = useRef(false)   // prevent concurrent overlap requests
+  const checkingRef = useRef(false)
 
   const onDone = useCallback((data: any) => { setResult(data); setStage('done') }, [])
   const jobData = useJobPoller(stage === 'processing' ? recordingId : null, onDone)
 
-  // ── Real-time cross-talk detection ────────────────────────────
   useEffect(() => {
     if (stage !== 'recording') {
       overlapCountRef.current = 0
       return
     }
-
     const interval = setInterval(async () => {
-      // Skip if a previous request is still in-flight
       if (checkingRef.current) return
-
       const chunkBlob = recorder.latestChunkRef.current
-      if (!chunkBlob || chunkBlob.size < 500) return   // skip empty/tiny chunks
-
+      if (!chunkBlob || chunkBlob.size < 500) return
       checkingRef.current = true
       try {
         const form = new FormData()
         form.append('file', chunkBlob, 'chunk.webm')
-
-        const res = await api.post('/api/detect-overlap', form, {
-          timeout: 3000,   // don't wait longer than 3 s per chunk
-        })
-
+        const res = await api.post('/api/detect-overlap', form, { timeout: 3000 })
         const isOverlap = res.data.overlap === 1
-
         if (isOverlap) {
           overlapCountRef.current += 1
         } else {
           overlapCountRef.current = 0
         }
-
-        // Fire alert only after OVERLAP_CONFIRM_COUNT consecutive positives
-        // and only if cooldown has expired
-        if (
-          overlapCountRef.current >= OVERLAP_CONFIRM_COUNT &&
-          Date.now() > cooldownUntilRef.current
-        ) {
+        if (overlapCountRef.current >= OVERLAP_CONFIRM_COUNT && Date.now() > cooldownUntilRef.current) {
           setOverlapAlert(true)
           cooldownUntilRef.current = Date.now() + OVERLAP_COOLDOWN_MS
-          overlapCountRef.current = 0   // reset counter after firing
+          overlapCountRef.current = 0
           setTimeout(() => setOverlapAlert(false), 3000)
         }
       } catch (err: any) {
-        // Non-fatal — log and continue; endpoint may not be available
         console.warn('[CrossTalk] detect-overlap request failed:', err?.message ?? err)
       } finally {
         checkingRef.current = false
       }
-    }, 1200)   // poll slightly faster than 1-second timeslice to catch every chunk
-
+    }, 1200)
     return () => {
       clearInterval(interval)
       overlapCountRef.current = 0
@@ -124,204 +104,208 @@ export default function RecordPage() {
 
   const processing = stage === 'uploading' || stage === 'processing'
   const chatW = chatOpen ? '340px' : '48px'
+  const isRecording = stage === 'recording'
 
   return (
     <div style={{ display: 'grid', gridTemplateColumns: `1fr ${chatW}`, height: '100dvh', overflow: 'hidden', transition: 'grid-template-columns .25s ease' }}>
 
-      {/* ── Center panel ────────────────────────────── */}
+      {/* ── Center panel */}
       <div className="center-panel">
 
         {/* Header */}
         <div className="panel-header" style={{ position: 'relative', overflow: 'hidden' }}>
-          <div style={{ 
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            height: '3px',
-            background: stage === 'recording' 
-              ? 'linear-gradient(90deg, hsl(var(--destructive)), hsl(var(--accent)))' 
+          {/* Stage progress bar */}
+          <div style={{
+            position: 'absolute', top: 0, left: 0, right: 0, height: '3px',
+            background: isRecording
+              ? 'linear-gradient(90deg, hsl(var(--destructive)), hsl(var(--accent)), hsl(var(--destructive)))'
+              : stage === 'done'
+              ? 'hsl(130, 60%, 45%)'
               : 'hsl(var(--accent))',
-            animation: stage === 'recording' ? 'progress-shimmer 2s infinite' : 'none'
+            backgroundSize: isRecording ? '200% 100%' : '100% 100%',
+            animation: isRecording ? 'progress-shimmer 2s linear infinite' : 'none',
+            transition: 'background .5s'
           }} />
-          <Radio 
-            size={18} 
-            style={{ 
-              color: stage === 'recording' ? 'hsl(var(--destructive))' : 'hsl(var(--accent))',
-              transition: 'all .3s'
-            }} 
-            className={stage === 'recording' ? 'animate-pulse-rec' : ''}
-          />
-          <div style={{ flex: 1 }}>
-            <h1 style={{ marginBottom: '.25rem' }}>Record Conversation</h1>
-            <p style={{ 
-              fontSize: '.88rem', 
-              color: 'hsl(var(--pencil))',
-              fontFamily: 'Inter, sans-serif',
-              fontWeight: 400
-            }}>
+
+          <div style={{
+            width: '34px', height: '34px', borderRadius: '10px', flexShrink: 0,
+            background: isRecording ? 'hsl(var(--destructive) / .15)' : 'hsl(var(--accent) / .12)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            border: `2px solid ${isRecording ? 'hsl(var(--destructive) / .4)' : 'hsl(var(--accent) / .3)'}`,
+            transition: 'all .3s'
+          }}>
+            <Radio
+              size={16}
+              style={{ color: isRecording ? 'hsl(var(--destructive))' : 'hsl(var(--accent))', transition: 'all .3s' }}
+              className={isRecording ? 'animate-pulse-rec' : ''}
+            />
+          </div>
+
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <h1>Record Conversation</h1>
+            <p style={{ fontSize: '.82rem', color: 'hsl(var(--pencil))', fontFamily: 'Inter, sans-serif', fontWeight: 400, marginTop: '1px' }}>
               Record first, then get transcription + speaker ID
             </p>
           </div>
+
           {result?.speakers_detected?.length > 0 && (
-            <div className="animate-slide-in-right" style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: '6px', 
-              fontSize: '.82rem', 
-              color: 'hsl(var(--pencil))',
-              padding: '.4rem .8rem',
-              background: 'hsl(var(--sticky-green) / .3)',
+            <div className="animate-slide-in-right" style={{
+              display: 'flex', alignItems: 'center', gap: '6px',
+              fontSize: '.8rem', color: 'hsl(var(--pencil))',
+              padding: '.35rem .8rem',
+              background: 'hsl(130, 60%, 45% / .12)',
               borderRadius: '999px',
-              border: '2px solid hsl(var(--ink) / .2)'
+              border: '1.5px solid hsl(130, 60%, 45% / .3)',
+              fontFamily: 'Inter, sans-serif',
+              fontWeight: 500,
+              flexShrink: 0
             }}>
-              <Users size={14} />
-              <span style={{ fontWeight: 600 }}>{result.speakers_detected.join(', ')}</span>
+              <Users size={13} style={{ color: 'hsl(130, 60%, 45%)' }} />
+              <span>{result.speakers_detected.join(', ')}</span>
             </div>
           )}
         </div>
 
-        {/* Recorder */}
-        <div style={{ 
-          padding: '2rem 1.5rem', 
-          borderBottom: '2px dashed hsl(var(--border))', 
-          display: 'flex', 
-          flexDirection: 'column', 
+        {/* Recording Section */}
+        <div style={{
+          padding: '1.75rem 2rem',
+          borderBottom: '2px dashed hsl(var(--border))',
+          display: 'flex',
+          flexDirection: 'column',
           gap: '1.25rem',
-          background: stage === 'recording' ? 'hsl(var(--destructive) / .03)' : 'transparent',
-          transition: 'background .3s'
+          background: isRecording
+            ? 'linear-gradient(180deg, hsl(var(--destructive) / .04) 0%, transparent 100%)'
+            : 'transparent',
+          transition: 'background .4s',
+          position: 'relative'
         }}>
 
           {/* Waveform */}
-          <div className={stage === 'recording' ? 'animate-slide-up' : ''}>
-            <WaveformVisualizer analyser={recorder.analyser} isActive={stage === 'recording'} />
+          <div style={{ width: '100%' }}>
+            <WaveformVisualizer
+              analyser={recorder.analyser}
+              isActive={isRecording}
+              height={80}
+            />
           </div>
 
           {/* Timer */}
-          <div style={{ 
-            textAlign: 'center', 
-            fontSize: '2.5rem', 
-            fontWeight: 700, 
-            fontFamily: 'JetBrains Mono, monospace', 
-            color: stage === 'recording' ? 'hsl(var(--destructive))' : 'hsl(var(--pencil))', 
-            letterSpacing: '.06em',
-            textShadow: stage === 'recording' ? '0 0 20px hsl(var(--destructive) / .3)' : 'none',
+          <div style={{
+            textAlign: 'center',
+            fontSize: '2.8rem',
+            fontWeight: 700,
+            fontFamily: 'JetBrains Mono, monospace',
+            color: isRecording ? 'hsl(var(--destructive))' : stage === 'done' ? 'hsl(130, 60%, 45%)' : 'hsl(var(--pencil))',
+            letterSpacing: '.08em',
+            lineHeight: 1,
+            textShadow: isRecording ? '0 0 24px hsl(var(--destructive) / .3)' : 'none',
             transition: 'all .3s'
           }}>
             {recorder.formattedDuration}
           </div>
 
-          {/* Status chips */}
-          {stage === 'recording' && (
-            <div className="animate-bounce-in" style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center', 
-              gap: '8px', 
-              flexDirection: 'column' 
-            }}>
-              <span className="badge badge-red" style={{ 
-                padding: '.45rem 1.1rem', 
-                fontSize: '.82rem',
-                fontWeight: 600,
-                boxShadow: '0 0 15px hsl(var(--destructive) / .3)'
+          {/* Status indicators */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
+
+            {isRecording && (
+              <div className="animate-bounce-in" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{
+                  display: 'flex', alignItems: 'center', gap: '8px',
+                  padding: '.4rem 1rem',
+                  background: 'hsl(var(--destructive) / .12)',
+                  border: '1.5px solid hsl(var(--destructive) / .3)',
+                  borderRadius: '999px',
+                  fontSize: '.82rem', fontWeight: 600,
+                  color: 'hsl(var(--destructive))',
+                  fontFamily: 'Inter, sans-serif',
+                  boxShadow: '0 0 12px hsl(var(--destructive) / .15)'
+                }}>
+                  <span style={{
+                    width: 8, height: 8, borderRadius: '50%',
+                    background: 'hsl(var(--destructive))',
+                    display: 'inline-block',
+                    boxShadow: '0 0 6px hsl(var(--destructive))'
+                  }} className="animate-pulse-rec" />
+                  RECORDING
+                </span>
+              </div>
+            )}
+
+            {overlapAlert && (
+              <div className="animate-shake" style={{
+                display: 'flex', alignItems: 'center', gap: '8px',
+                padding: '.45rem 1rem',
+                background: 'hsl(var(--destructive) / .1)',
+                border: '1.5px solid hsl(var(--destructive) / .4)',
+                borderRadius: '999px',
+                fontSize: '.82rem', fontWeight: 600,
+                color: 'hsl(var(--destructive))',
+                fontFamily: 'Inter, sans-serif',
               }}>
-                <span style={{ 
-                  width: 9, 
-                  height: 9, 
-                  borderRadius: '50%', 
-                  background: 'hsl(var(--destructive))', 
-                  display: 'inline-block', 
-                  marginRight: '6px',
-                  boxShadow: '0 0 8px hsl(var(--destructive))'
-                }} className="animate-pulse-rec" />
-                Recording
-              </span>
-            </div>
-          )}
+                <AlertTriangle size={14} />
+                Cross-talk detected — please speak one at a time
+              </div>
+            )}
 
-          {/* Cross-talk alert badge — smooth, non-blocking */}
-          {overlapAlert && (
-            <div
-              className="badge badge-red animate-shake"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
+            {processing && (
+              <div className="animate-fade-in" style={{
+                display: 'flex', alignItems: 'center', gap: '10px',
                 justifyContent: 'center',
-                padding: '.55rem 1.2rem',
-                fontSize: '.85rem',
-                fontWeight: 600,
-                boxShadow: '0 4px 12px hsl(var(--destructive) / .3)'
-              }}
-            >
-              <AlertTriangle size={16} />
-              ⚠️ Cross-talk detected — please speak one at a time
-            </div>
-          )}
+                color: 'hsl(var(--accent))',
+                fontSize: '.9rem',
+                fontFamily: 'Inter, sans-serif',
+                fontWeight: 500
+              }}>
+                <Loader size={16} className="spin" />
+                {stage === 'uploading' ? 'Uploading…' : (PROGRESS[jobData?.progress || ''] || 'Processing…')}
+              </div>
+            )}
 
-          {processing && (
-            <div className="animate-fade-in" style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: '10px', 
-              justifyContent: 'center', 
-              color: 'hsl(var(--accent))', 
-              fontSize: '.9rem',
-              fontFamily: 'Inter, sans-serif',
-              fontWeight: 500
-            }}>
-              <Loader size={16} className="spin" />
-              {stage === 'uploading' ? 'Uploading…' : (PROGRESS[jobData?.progress || ''] || 'Processing…')}
-            </div>
-          )}
-          {uploadError && (
-            <div className="animate-shake" style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: '8px', 
-              color: 'hsl(var(--destructive))', 
-              fontSize: '.86rem', 
-              justifyContent: 'center',
-              fontFamily: 'Inter, sans-serif',
-              fontWeight: 500
-            }}>
-              <AlertTriangle size={16} /> {uploadError}
-            </div>
-          )}
+            {uploadError && (
+              <div className="animate-shake" style={{
+                display: 'flex', alignItems: 'center', gap: '8px',
+                color: 'hsl(var(--destructive))',
+                fontSize: '.86rem',
+                justifyContent: 'center',
+                fontFamily: 'Inter, sans-serif',
+                fontWeight: 500
+              }}>
+                <AlertTriangle size={16} /> {uploadError}
+              </div>
+            )}
+          </div>
 
           {/* Controls */}
-          <div style={{ 
-            display: 'flex', 
-            justifyContent: 'center', 
-            alignItems: 'center', 
-            gap: '18px',
-            marginTop: '.5rem'
-          }}>
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '18px' }}>
             {stage === 'idle' && (
-              <button 
-                className="record-btn idle" 
-                onClick={() => { recorder.start(); setStage('recording') }} 
-                id="main-record-btn" 
-                title="Start recording"
-              >
-                <Mic size={38} color="hsl(var(--accent-foreground))" />
-              </button>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
+                <button
+                  className="record-btn idle"
+                  onClick={() => { recorder.start(); setStage('recording') }}
+                  id="main-record-btn"
+                  title="Start recording"
+                >
+                  <Mic size={38} color="hsl(var(--accent-foreground))" />
+                </button>
+                <span style={{ fontSize: '.78rem', color: 'hsl(var(--pencil))', fontFamily: 'Inter, sans-serif' }}>
+                  Click to record
+                </span>
+              </div>
             )}
-            {stage === 'recording' && (
-              <button 
-                className="record-btn recording" 
-                onClick={handleStop} 
-                id="main-stop-btn" 
-                title="Stop"
+            {isRecording && (
+              <button
+                className="record-btn recording"
+                onClick={handleStop}
+                id="main-stop-btn"
+                title="Stop recording"
               >
                 <Square size={32} color="hsl(var(--accent-foreground))" fill="hsl(var(--accent-foreground))" />
               </button>
             )}
             {stage === 'stopped' && (
-              <div className="animate-slide-up" style={{ display: 'flex', gap: '12px' }}>
+              <div className="animate-slide-up" style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
                 <button className="btn btn-ghost" onClick={handleReset}>
-                  <RotateCcw size={16} /> Discard
+                  <RotateCcw size={15} /> Discard
                 </button>
                 <button className="btn btn-primary" onClick={handleSubmit} id="submit-btn">
                   Analyse Recording
@@ -329,60 +313,69 @@ export default function RecordPage() {
               </div>
             )}
             {processing && (
-              <button className="record-btn idle" disabled style={{ opacity: .5 }}>
+              <button className="record-btn idle" disabled style={{ opacity: .5, cursor: 'not-allowed' }}>
                 <Loader size={32} color="hsl(var(--accent-foreground))" className="spin" />
               </button>
             )}
             {(stage === 'done' || stage === 'error') && (
               <button className="btn btn-ghost animate-bounce-in" onClick={handleReset}>
-                <RotateCcw size={16} /> New Recording
+                <RotateCcw size={15} /> New Recording
               </button>
             )}
           </div>
 
           {/* Audio preview */}
           {recorder.audioUrl && stage === 'stopped' && (
-            <div className="animate-slide-up" style={{ marginTop: '.5rem' }}>
-              <audio 
-                src={recorder.audioUrl} 
-                controls 
-                style={{ 
-                  width: '100%', 
-                  height: 42, 
+            <div className="animate-slide-up">
+              <audio
+                src={recorder.audioUrl}
+                controls
+                style={{
+                  width: '100%',
+                  height: 40,
                   accentColor: 'hsl(var(--accent))',
-                  borderRadius: '12px',
-                  filter: 'url(#squiggle-soft)'
-                }} 
+                  borderRadius: '10px',
+                }}
               />
             </div>
           )}
         </div>
 
         {/* Transcript */}
-        <div style={{ 
-          flex: 1, 
-          overflowY: 'auto', 
-          padding: '1.5rem 1.75rem',
-          background: 'hsl(var(--paper) / .5)'
+        <div style={{
+          flex: 1,
+          overflowY: 'auto',
+          padding: '1.25rem 1.5rem',
+          background: 'hsl(var(--paper) / .4)'
         }}>
           {result?.transcript?.length > 0 && (
-            <div className="animate-slide-up" style={{ marginBottom: '1rem' }}>
-              <h3 style={{ 
-                fontSize: '1.1rem', 
-                fontWeight: 700, 
+            <div className="animate-slide-up" style={{ marginBottom: '.75rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <h3 style={{
+                fontSize: '1rem',
+                fontWeight: 700,
                 color: 'hsl(var(--ink))',
-                fontFamily: 'Caveat, cursive',
-                marginBottom: '.5rem'
+                fontFamily: 'Inter, sans-serif',
+                letterSpacing: '-.01em'
               }}>
                 Transcript
               </h3>
+              <span style={{
+                fontSize: '.72rem', fontWeight: 600,
+                color: 'hsl(var(--pencil))',
+                background: 'hsl(var(--muted))',
+                padding: '.15rem .5rem',
+                borderRadius: '999px',
+                fontFamily: 'Inter, sans-serif'
+              }}>
+                {result.transcript.length} segments
+              </span>
             </div>
           )}
           <TranscriptViewer segments={result?.transcript || []} />
         </div>
       </div>
 
-      {/* ── AI Chat ─────────────────────────────────── */}
+      {/* AI Chat */}
       <AIChatPanel
         recordingId={recordingId}
         summary={result?.summary}

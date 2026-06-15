@@ -34,44 +34,44 @@ export default function Login() {
     <div className="auth-bg">
       <div className="auth-card animate-bounce-in">
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <div style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center', 
-            gap: '10px', 
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '10px',
             marginBottom: '0.75rem',
             position: 'relative'
           }}>
             <div style={{ position: 'relative' }}>
-              <Zap 
-                size={28} 
-                style={{ color: 'hsl(var(--accent))', position: 'relative', zIndex: 1 }} 
-                fill="currentColor" 
+              <Zap
+                size={28}
+                style={{ color: 'hsl(var(--accent))', position: 'relative', zIndex: 1 }}
+                fill="currentColor"
                 className="animate-float"
               />
-              <Sparkles 
-                size={14} 
-                style={{ 
-                  position: 'absolute', 
-                  top: -4, 
-                  right: -4, 
+              <Sparkles
+                size={14}
+                style={{
+                  position: 'absolute',
+                  top: -4,
+                  right: -4,
                   color: 'hsl(var(--accent))',
                   animation: 'pulse-rec 2s ease-in-out infinite'
-                }} 
+                }}
               />
             </div>
-            <span style={{ 
-              fontSize: '1.8rem', 
-              fontWeight: 800, 
+            <span style={{
+              fontSize: '1.8rem',
+              fontWeight: 800,
               letterSpacing: '-0.03em',
               fontFamily: 'Caveat, cursive'
             }}>
               Voice<span style={{ color: 'hsl(var(--accent))' }}>Sum</span>
             </span>
           </div>
-          <h1 style={{ 
-            fontSize: '1.15rem', 
-            fontWeight: 600, 
+          <h1 style={{
+            fontSize: '1.15rem',
+            fontWeight: 600,
             color: 'hsl(var(--pencil))',
             fontFamily: 'Inter, sans-serif'
           }}>
@@ -91,23 +91,23 @@ export default function Login() {
           <div className="animate-slide-up" style={{ animationDelay: '0.1s', animationFillMode: 'both' }}>
             <label className="label">Email</label>
             <div style={{ position: 'relative' }}>
-              <Mail size={16} style={{ 
-                position: 'absolute', 
-                left: '14px', 
-                top: '50%', 
-                transform: 'translateY(-50%)', 
+              <Mail size={16} style={{
+                position: 'absolute',
+                left: '14px',
+                top: '50%',
+                transform: 'translateY(-50%)',
                 color: 'hsl(var(--pencil))',
                 zIndex: 1
               }} />
-              <input 
-                id="login-email" 
-                className="input" 
-                type="email" 
-                placeholder="you@example.com" 
-                value={email} 
-                onChange={(e) => setEmail(e.target.value)} 
-                required 
-                style={{ paddingLeft: '2.5rem' }} 
+              <input
+                id="login-email"
+                className="input"
+                type="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                style={{ paddingLeft: '2.5rem' }}
               />
             </div>
           </div>
@@ -115,32 +115,32 @@ export default function Login() {
           <div className="animate-slide-up" style={{ animationDelay: '0.2s', animationFillMode: 'both' }}>
             <label className="label">Password</label>
             <div style={{ position: 'relative' }}>
-              <Lock size={16} style={{ 
-                position: 'absolute', 
-                left: '14px', 
-                top: '50%', 
-                transform: 'translateY(-50%)', 
+              <Lock size={16} style={{
+                position: 'absolute',
+                left: '14px',
+                top: '50%',
+                transform: 'translateY(-50%)',
                 color: 'hsl(var(--pencil))',
                 zIndex: 1
               }} />
-              <input 
-                id="login-password" 
-                className="input" 
-                type={showPw ? 'text' : 'password'} 
-                placeholder="••••••••" 
-                value={password} 
-                onChange={(e) => setPassword(e.target.value)} 
-                required 
-                style={{ paddingLeft: '2.5rem', paddingRight: '2.75rem' }} 
+              <input
+                id="login-password"
+                className="input"
+                type={showPw ? 'text' : 'password'}
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                style={{ paddingLeft: '2.5rem', paddingRight: '2.75rem' }}
               />
-              <button 
-                type="button" 
-                onClick={() => setShowPw(!showPw)} 
+              <button
+                type="button"
+                onClick={() => setShowPw(!showPw)}
                 className="icon-btn"
-                style={{ 
-                  position: 'absolute', 
-                  right: '8px', 
-                  top: '50%', 
+                style={{
+                  position: 'absolute',
+                  right: '8px',
+                  top: '50%',
                   transform: 'translateY(-50%)',
                   width: '32px',
                   height: '32px',
@@ -155,12 +155,12 @@ export default function Login() {
           </div>
 
           {error && (
-            <div className="animate-shake" style={{ 
-              background: 'hsl(var(--destructive) / 0.1)', 
-              border: '2px solid hsl(var(--destructive) / 0.4)', 
-              borderRadius: '10px 14px 12px 16px / 14px 12px 16px 10px', 
-              padding: '0.75rem 1rem', 
-              color: 'hsl(var(--destructive))', 
+            <div className="animate-shake" style={{
+              background: 'hsl(var(--destructive) / 0.1)',
+              border: '2px solid hsl(var(--destructive) / 0.4)',
+              borderRadius: '10px 14px 12px 16px / 14px 12px 16px 10px',
+              padding: '0.75rem 1rem',
+              color: 'hsl(var(--destructive))',
               fontSize: '0.85rem',
               fontFamily: 'Inter, sans-serif',
               fontWeight: 500
@@ -169,14 +169,14 @@ export default function Login() {
             </div>
           )}
 
-          <button 
-            id="login-submit" 
-            className="btn btn-primary animate-slide-up" 
-            type="submit" 
-            disabled={loading} 
-            style={{ 
-              width: '100%', 
-              justifyContent: 'center', 
+          <button
+            id="login-submit"
+            className="btn btn-primary animate-slide-up"
+            type="submit"
+            disabled={loading}
+            style={{
+              width: '100%',
+              justifyContent: 'center',
               marginTop: '0.25rem',
               animationDelay: '0.3s',
               animationFillMode: 'both'
@@ -191,18 +191,18 @@ export default function Login() {
           <span>or</span>
         </div>
 
-        <p style={{ 
-          textAlign: 'center', 
-          fontSize: '0.9rem', 
+        <p style={{
+          textAlign: 'center',
+          fontSize: '0.9rem',
           color: 'hsl(var(--pencil))',
           fontFamily: 'Inter, sans-serif'
         }}>
           Don't have an account?{' '}
-          <Link 
-            to="/signup" 
-            style={{ 
-              color: 'hsl(var(--accent))', 
-              textDecoration: 'none', 
+          <Link
+            to="/signup"
+            style={{
+              color: 'hsl(var(--accent))',
+              textDecoration: 'none',
               fontWeight: 600,
               position: 'relative',
               transition: 'all .2s'

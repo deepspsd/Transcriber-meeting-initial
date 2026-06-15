@@ -4,9 +4,9 @@ import VoiceRecorder from '../components/VoiceRecorder'
 import api from '../api/client'
 
 const STEPS = [
-  { title: 'Sample 1', instruction: 'Record a clear voice sample (10–30 seconds).', icon: '1️⃣' },
-  { title: 'Sample 2', instruction: 'Record another sample in a different tone.', icon: '2️⃣' },
-  { title: 'Sample 3 (Optional)', instruction: 'Optional additional sample for better accuracy.', icon: '3️⃣' },
+  { title: 'Sample 1', instruction: 'Record a clear voice sample (10–30 seconds).', num: '1' },
+  { title: 'Sample 2', instruction: 'Record another sample in a different tone.', num: '2' },
+  { title: 'Sample 3', instruction: 'Optional additional sample for better accuracy.', num: '3' },
 ]
 
 const SAMPLE_SCRIPTS = [
@@ -44,176 +44,117 @@ export default function AddVoicePage() {
   }
 
   if (success) return (
-    <div style={{ 
-      flex: 1, 
-      display: 'flex', 
-      flexDirection: 'column', 
-      alignItems: 'center', 
-      justifyContent: 'center', 
-      gap: '2rem',
-      padding: '3rem'
+    <div style={{
+      flex: 1, display: 'flex', flexDirection: 'column',
+      alignItems: 'center', justifyContent: 'center',
+      gap: '2rem', padding: '3rem',
+      background: 'hsl(var(--paper) / .4)'
     }}>
       <div className="animate-bounce-in" style={{
-        width: '96px',
-        height: '96px',
-        borderRadius: '50%',
-        background: 'hsl(var(--sticky-green) / .3)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        border: '4px solid hsl(var(--sticky-green))'
+        width: '88px', height: '88px', borderRadius: '50%',
+        background: 'hsl(130,60%,45% / .15)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        border: '3px solid hsl(130,60%,45% / .4)'
       }}>
-        <CheckCircle size={56} style={{ color: 'hsl(var(--sticky-green))' }} />
+        <CheckCircle size={48} style={{ color: 'hsl(130,60%,45%)' }} />
       </div>
       <div style={{ textAlign: 'center' }}>
-        <h2 style={{ 
-          fontWeight: 800, 
-          fontSize: '2rem',
-          fontFamily: 'Caveat, cursive',
-          marginBottom: '.75rem',
-          color: 'hsl(var(--ink))'
-        }}>
+        <h2 style={{ fontWeight: 800, fontSize: '1.8rem', fontFamily: 'Inter, sans-serif', marginBottom: '.75rem', color: 'hsl(var(--ink))', letterSpacing: '-.02em' }}>
           Voice profile saved!
         </h2>
-        <p style={{ 
-          color: 'hsl(var(--pencil))', 
-          fontSize: '1.05rem',
-          fontFamily: 'Inter, sans-serif',
-          maxWidth: '450px',
-          lineHeight: 1.6
-        }}>
+        <p style={{ color: 'hsl(var(--pencil))', fontSize: '1rem', fontFamily: 'Inter, sans-serif', maxWidth: '420px', lineHeight: 1.6 }}>
           VoiceSum will now recognise this person in future recordings
         </p>
       </div>
-      <button 
-        className="btn btn-primary animate-slide-up" 
+      <button
+        className="btn btn-primary animate-slide-up"
         onClick={() => setSuccess(false)}
-        style={{ 
-          animationDelay: '0.2s', 
-          animationFillMode: 'both',
-          padding: '.75rem 1.5rem',
-          fontSize: '1rem'
-        }}
+        style={{ animationDelay: '0.2s', animationFillMode: 'both', padding: '.75rem 1.5rem', fontSize: '.95rem' }}
       >
-        <UserPlus size={18} /> Add Another
+        <UserPlus size={16} /> Add Another
       </button>
     </div>
   )
 
   return (
-    <div style={{ 
-      flex: 1, 
-      overflowY: 'auto', 
-      padding: '3rem 3rem 4rem', 
-      maxWidth: '850px', 
-      margin: '0 auto', 
-      width: '100%',
-      background: 'hsl(var(--paper) / .5)'
+    <div style={{
+      flex: 1, overflowY: 'auto',
+      padding: '2.5rem 2.5rem 4rem',
+      maxWidth: '820px', margin: '0 auto', width: '100%',
+      background: 'hsl(var(--paper) / .4)'
     }}>
-      <div className="animate-slide-up" style={{ marginBottom: '3rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '1rem' }}>
+
+      {/* Page header */}
+      <div className="animate-slide-up" style={{ marginBottom: '2.5rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
           <div style={{
-            width: '56px',
-            height: '56px',
-            borderRadius: '14px',
-            background: 'hsl(var(--accent) / .15)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            border: '2.5px solid hsl(var(--accent) / .3)'
+            width: '48px', height: '48px', borderRadius: '12px',
+            background: 'hsl(var(--accent) / .12)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            border: '2px solid hsl(var(--accent) / .3)',
           }}>
-            <UserPlus size={28} style={{ color: 'hsl(var(--accent))' }} />
+            <UserPlus size={24} style={{ color: 'hsl(var(--accent))' }} />
           </div>
           <div>
-            <h1 style={{ 
-              fontSize: '2rem', 
-              fontWeight: 800, 
-              fontFamily: 'Caveat, cursive',
-              color: 'hsl(var(--ink))',
-              lineHeight: 1,
-              marginBottom: '.35rem'
-            }}>
+            <h1 style={{ fontSize: '1.8rem', fontWeight: 800, fontFamily: 'Inter, sans-serif', color: 'hsl(var(--ink))', lineHeight: 1, marginBottom: '.3rem', letterSpacing: '-.02em' }}>
               Add Voice Profile
             </h1>
-            <p style={{ 
-              color: 'hsl(var(--pencil))', 
-              fontSize: '1rem',
-              fontFamily: 'Inter, sans-serif',
-              fontWeight: 400
-            }}>
-              Add a teammate, friend, or colleague
+            <p style={{ color: 'hsl(var(--pencil))', fontSize: '.9rem', fontFamily: 'Inter, sans-serif' }}>
+              Add a teammate, friend, or colleague for speaker identification
             </p>
           </div>
         </div>
       </div>
 
       {/* Name */}
-      <div className="glass animate-slide-up" style={{ 
-        padding: '2rem', 
-        marginBottom: '2.5rem',
-        animationDelay: '0.1s',
-        animationFillMode: 'both'
+      <div className="animate-slide-up" style={{
+        padding: '1.5rem',
+        marginBottom: '1.5rem',
+        background: 'hsl(var(--card))',
+        border: '1.5px solid hsl(var(--ink) / .1)',
+        borderRadius: '12px',
+        animationDelay: '0.08s', animationFillMode: 'both'
       }}>
-        <label className="label" style={{ marginBottom: '.85rem', fontSize: '1rem' }}>
+        <label className="label" style={{ marginBottom: '.75rem', fontSize: '.88rem' }}>
           Name / Label *
         </label>
-        <input 
-          id="voice-label" 
-          className="input" 
-          placeholder="e.g. Alice, John, Boss" 
-          value={label} 
-          onChange={(e) => setLabel(e.target.value)} 
+        <input
+          id="voice-label"
+          className="input"
+          placeholder="e.g. Alice, John, Boss"
+          value={label}
+          onChange={(e) => setLabel(e.target.value)}
         />
       </div>
 
       {/* Sample script guide */}
-      <div className="glass animate-slide-up" style={{ 
-        padding: '2rem',
-        marginBottom: '2.5rem',
-        background: 'hsl(var(--sticky-blue) / .15)',
-        border: '2.5px dashed hsl(var(--ink) / .25)',
-        animationDelay: '0.15s',
-        animationFillMode: 'both'
+      <div className="animate-slide-up" style={{
+        padding: '1.25rem',
+        marginBottom: '1.5rem',
+        background: 'hsl(205,90%,55% / .07)',
+        border: '1.5px solid hsl(205,90%,55% / .25)',
+        borderRadius: '12px',
+        animationDelay: '0.12s', animationFillMode: 'both'
       }}>
-        <div style={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          gap: '10px', 
-          marginBottom: '1.25rem' 
-        }}>
-          <Sparkles size={20} style={{ color: 'hsl(var(--accent))' }} />
-          <h3 style={{ 
-            fontSize: '1.2rem', 
-            fontWeight: 700,
-            fontFamily: 'Inter, sans-serif',
-            color: 'hsl(var(--ink))'
-          }}>
-            Sample Scripts (Optional)
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1rem' }}>
+          <Sparkles size={16} style={{ color: 'hsl(205,90%,55%)' }} />
+          <h3 style={{ fontSize: '.95rem', fontWeight: 700, fontFamily: 'Inter, sans-serif', color: 'hsl(var(--ink))' }}>
+            Sample Scripts <span style={{ fontWeight: 400, color: 'hsl(var(--pencil))' }}>(optional)</span>
           </h3>
         </div>
         {SAMPLE_SCRIPTS.map((script, idx) => (
-          <div 
-            key={idx}
-            style={{
-              padding: '1rem 1.25rem',
-              background: 'hsl(var(--card))',
-              borderRadius: '10px 14px 12px 16px / 14px 12px 16px 10px',
-              border: '2px solid hsl(var(--ink) / .15)',
-              marginBottom: idx < SAMPLE_SCRIPTS.length - 1 ? '1rem' : 0,
-              fontSize: '.95rem',
-              lineHeight: 1.75,
-              fontFamily: 'Inter, sans-serif',
-              color: 'hsl(var(--ink-soft))',
-              fontStyle: 'italic'
-            }}
-          >
-            <span style={{ 
-              fontWeight: 700, 
-              color: 'hsl(var(--accent))',
-              fontStyle: 'normal',
-              marginRight: '.65rem',
-              fontSize: '1.1rem'
-            }}>
+          <div key={idx} style={{
+            padding: '.85rem 1rem',
+            background: 'hsl(var(--card))',
+            borderRadius: '8px',
+            border: '1.5px solid hsl(var(--ink) / .08)',
+            marginBottom: idx < SAMPLE_SCRIPTS.length - 1 ? '.75rem' : 0,
+            fontSize: '.88rem', lineHeight: 1.7,
+            fontFamily: 'Inter, sans-serif',
+            color: 'hsl(var(--ink-soft))',
+            display: 'flex', gap: '.75rem'
+          }}>
+            <span style={{ fontWeight: 700, color: 'hsl(var(--accent))', fontStyle: 'normal', flexShrink: 0, fontSize: '.85rem' }}>
               {idx + 1}.
             </span>
             {script}
@@ -222,117 +163,106 @@ export default function AddVoicePage() {
       </div>
 
       {/* Step tabs */}
-      <div className="animate-slide-up" style={{ 
-        display: 'flex', 
-        gap: '12px', 
-        marginBottom: '2rem',
-        animationDelay: '0.2s',
-        animationFillMode: 'both'
+      <div className="animate-slide-up" style={{
+        display: 'flex', gap: '8px', marginBottom: '1.5rem',
+        animationDelay: '0.16s', animationFillMode: 'both'
       }}>
-        {STEPS.map((s, i) => (
-          <button 
-            key={i} 
-            onClick={() => setStep(i)} 
-            style={{
-              flex: 1, 
-              padding: '1rem 0.65rem', 
-              borderRadius: '12px 16px 14px 18px / 16px 12px 18px 14px', 
-              border: step === i ? '2.5px solid hsl(var(--accent))' : '2.5px solid hsl(var(--ink) / .2)', 
-              cursor: 'pointer',
-              background: step === i ? 'hsl(var(--accent) / .15)' : 'hsl(var(--card))',
-              color: step === i ? 'hsl(var(--accent))' : 'hsl(var(--ink-soft))',
-              fontSize: '0.92rem', 
-              fontWeight: 600,
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center', 
-              gap: '8px',
-              transition: 'all 0.2s',
-              fontFamily: 'Inter, sans-serif',
-              boxShadow: step === i ? '3px 3px 0 0 hsl(var(--accent) / .2)' : '2px 2px 0 0 hsl(var(--ink) / .1)'
-            }}
-          >
-            {savedPaths[i] && <CheckCircle size={16} />}
-            <span style={{ fontSize: '1.1rem' }}>{s.icon}</span>
-            {s.title}
-          </button>
-        ))}
+        {STEPS.map((s, i) => {
+          const isDone = !!savedPaths[i]
+          const isActive = step === i
+          return (
+            <button
+              key={i}
+              onClick={() => setStep(i)}
+              style={{
+                flex: 1,
+                padding: '.85rem .5rem',
+                borderRadius: '10px',
+                border: isActive ? '2px solid hsl(var(--accent))' : isDone ? '2px solid hsl(130,60%,45% / .4)' : '1.5px dashed hsl(var(--ink) / .15)',
+                cursor: 'pointer',
+                background: isActive ? 'hsl(var(--accent) / .1)' : isDone ? 'hsl(130,60%,45% / .08)' : 'hsl(var(--card))',
+                color: isActive ? 'hsl(var(--accent))' : isDone ? 'hsl(130,60%,45%)' : 'hsl(var(--pencil))',
+                fontSize: '0.85rem', fontWeight: 600,
+                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px',
+                transition: 'all 0.2s', fontFamily: 'Inter, sans-serif',
+                boxShadow: isActive ? '0 2px 8px hsl(var(--accent) / .15)' : 'none'
+              }}
+            >
+              <div style={{
+                width: '24px', height: '24px', borderRadius: '50%',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                background: isDone ? 'hsl(130,60%,45%)' : isActive ? 'hsl(var(--accent))' : 'hsl(var(--muted))',
+                color: isDone || isActive ? '#fff' : 'hsl(var(--pencil))',
+                fontSize: '.72rem', fontWeight: 700, transition: 'all .2s'
+              }}>
+                {isDone ? '✓' : s.num}
+              </div>
+              {s.title}
+            </button>
+          )
+        })}
       </div>
 
-      <div className="animate-slide-up" style={{ 
-        marginBottom: '2rem',
-        animationDelay: '0.25s',
-        animationFillMode: 'both'
-      }}>
-        <div className="glass" style={{ padding: '2rem', marginBottom: '1.25rem' }}>
-          <div style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: '10px', 
-            marginBottom: '1.25rem' 
-          }}>
-            <Mic size={20} style={{ color: 'hsl(var(--accent))' }} />
-            <p style={{ 
-              fontSize: '1rem', 
-              color: 'hsl(var(--ink-soft))',
-              fontFamily: 'Inter, sans-serif',
-              fontWeight: 500
-            }}>
+      {/* Current step recorder */}
+      <div className="animate-slide-up" style={{ marginBottom: '1.25rem', animationDelay: '0.2s', animationFillMode: 'both' }}>
+        <div style={{
+          padding: '1.5rem',
+          background: 'hsl(var(--card))',
+          border: '1.5px solid hsl(var(--ink) / .1)',
+          borderRadius: '12px',
+          marginBottom: '1rem'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1.1rem' }}>
+            <Mic size={16} style={{ color: 'hsl(var(--accent))', flexShrink: 0 }} />
+            <p style={{ fontSize: '.9rem', color: 'hsl(var(--ink-soft))', fontFamily: 'Inter, sans-serif', fontWeight: 500 }}>
               {STEPS[step].instruction}
             </p>
           </div>
-          <VoiceRecorder  
-            sampleIndex={step} 
-            label={label || 'speaker'} 
-            onSampleSaved={handleSampleSaved} 
+          <VoiceRecorder
+            sampleIndex={step}
+            label={label || 'speaker'}
+            onSampleSaved={handleSampleSaved}
           />
         </div>
 
         {step < 2 && (
-          <button 
-            className="btn btn-ghost" 
+          <button
+            className="btn btn-ghost"
             onClick={() => {
-              if (!savedPaths[step]) {
-                setError("Please record this sample before continuing.");
-                return;
-              }
-              setError('');
-              setStep(step + 1);
+              if (!savedPaths[step]) { setError("Please record this sample before continuing."); return }
+              setError('')
+              setStep(step + 1)
             }}
-            style={{ width: '100%', justifyContent: 'center', padding: '.75rem 1.25rem', fontSize: '1rem' }}
+            style={{ width: '100%', justifyContent: 'center', padding: '.65rem 1.25rem', fontSize: '.9rem' }}
           >
             Next sample →
           </button>
         )}
       </div>
 
+      {/* Error */}
       {error && (
-        <div className="animate-shake" style={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          gap: '10px', 
-          color: 'hsl(var(--destructive))', 
-          fontSize: '0.95rem', 
-          marginBottom: '1.25rem',
-          padding: '1rem 1.25rem',
-          background: 'hsl(var(--destructive) / .1)',
-          border: '2px solid hsl(var(--destructive) / .3)',
-          borderRadius: '10px 14px 12px 16px / 14px 12px 16px 10px',
-          fontFamily: 'Inter, sans-serif',
-          fontWeight: 500
+        <div className="animate-shake" style={{
+          display: 'flex', alignItems: 'center', gap: '10px',
+          color: 'hsl(var(--destructive))', fontSize: '0.88rem', marginBottom: '1.25rem',
+          padding: '.75rem 1rem',
+          background: 'hsl(var(--destructive) / .08)',
+          border: '1.5px solid hsl(var(--destructive) / .25)',
+          borderRadius: '10px', fontFamily: 'Inter, sans-serif', fontWeight: 500
         }}>
-          <AlertTriangle size={18} /> {error}
+          <AlertTriangle size={15} /> {error}
         </div>
       )}
 
-      <button 
-        className="btn btn-primary" 
-        onClick={handleSave} 
-        disabled={submitting} 
-        id="save-voice-btn" 
-        style={{ width: '100%', justifyContent: 'center', padding: '.8rem 1.5rem', fontSize: '1rem' }}
+      {/* Save */}
+      <button
+        className="btn btn-primary"
+        onClick={handleSave}
+        disabled={submitting}
+        id="save-voice-btn"
+        style={{ width: '100%', justifyContent: 'center', padding: '.75rem 1.5rem', fontSize: '.95rem' }}
       >
-        {submitting ? <Loader size={18} className="spin" /> : <CheckCircle size={18} />}
+        {submitting ? <Loader size={16} className="spin" /> : <CheckCircle size={16} />}
         {submitting ? 'Saving…' : 'Save Voice Profile'}
       </button>
     </div>
