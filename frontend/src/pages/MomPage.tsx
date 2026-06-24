@@ -303,7 +303,7 @@ ${mom.next_meeting_date ? `NEXT MEETING\n------------\n${mom.next_meeting_date}`
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden', background: 'hsl(var(--paper) / .4)' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100%', background: 'hsl(var(--paper) / .4)' }}>
 
       {/* ── Header ── */}
       <div className="panel-header" style={{ flexShrink: 0, flexWrap: 'wrap', gap: '8px' }}>
@@ -412,11 +412,16 @@ ${mom.next_meeting_date ? `NEXT MEETING\n------------\n${mom.next_meeting_date}`
               </div>
             )}
             <button
-              className="btn btn-primary"
+              className="btn btn-primary animate-glow-pulse"
               onClick={handleGenerate}
-              style={{ fontSize: '0.95rem', padding: '0.7rem 2rem', gap: '8px', borderRadius: '12px' }}
+              style={{
+                fontSize: '0.95rem', padding: '0.75rem 2.25rem', gap: '8px',
+                borderRadius: '12px',
+                boxShadow: '0 0 0 0 hsl(var(--accent) / .4)',
+                animation: 'pulse-glow 2.5s ease-in-out infinite',
+              }}
             >
-              <Sparkles size={16} /> Generate MoM
+              <Sparkles size={16} /> Generate Minutes of Meeting
             </button>
           </div>
         )}
@@ -469,7 +474,7 @@ ${mom.next_meeting_date ? `NEXT MEETING\n------------\n${mom.next_meeting_date}`
             <div style={{ flex: 1, overflowY: 'auto', padding: '1.5rem', minWidth: 0 }}>
 
               {/* Meeting info card */}
-              <MomSection title="Meeting Information">
+              <MomSection title="Meeting Information" className="mom-section">
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                   <div>
                     <label style={{ fontSize: '0.78rem', fontWeight: 600, color: 'hsl(var(--pencil))', fontFamily: 'Inter, sans-serif', display: 'block', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
@@ -586,35 +591,37 @@ ${mom.next_meeting_date ? `NEXT MEETING\n------------\n${mom.next_meeting_date}`
             {/* ── Version History sidebar ── */}
             {historyOpen && (
               <div
-                className="animate-slide-up"
+                className="version-panel"
                 style={{
                   width: '280px', flexShrink: 0, overflowY: 'auto',
-                  borderLeft: '1px solid hsl(var(--border) / .5)',
+                  borderLeft: '1px solid hsl(var(--border) / .25)',
                   background: 'hsl(var(--card))',
                   padding: '1.25rem 1rem'
                 }}
               >
-                <h3 style={{ fontSize: '0.9rem', fontWeight: 700, color: 'hsl(var(--ink))', fontFamily: 'Inter, sans-serif', marginBottom: '1rem' }}>
-                  Version History
+                <h3 style={{ fontSize: '0.9rem', fontWeight: 700, color: 'hsl(var(--ink))', fontFamily: 'Inter, sans-serif', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <History size={14} style={{ color: 'hsl(var(--accent))' }} /> Version History
                 </h3>
 
                 {versions.length === 0 && (
-                  <p style={{ fontSize: '0.82rem', color: 'hsl(var(--pencil))', fontFamily: 'Inter, sans-serif' }}>
-                    No saved versions yet. Versions are saved every 5 minutes automatically.
+                  <p style={{ fontSize: '0.82rem', color: 'hsl(var(--pencil))', fontFamily: 'Inter, sans-serif', lineHeight: 1.6 }}>
+                    No saved versions yet. Versions are saved automatically.
                   </p>
                 )}
 
                 {versions.map((v, idx) => (
                   <div key={idx} style={{
                     borderRadius: '10px', padding: '0.75rem 1rem',
-                    border: '1px solid hsl(var(--border) / .4)',
-                    background: 'hsl(var(--paper) / .5)',
-                    marginBottom: '8px'
+                    border: idx === 0 ? '1.5px solid hsl(var(--sticky-yellow) / .5)' : '1px solid hsl(var(--border) / .3)',
+                    background: idx === 0 ? 'hsl(var(--sticky-yellow) / .08)' : 'hsl(var(--paper) / .5)',
+                    marginBottom: '8px',
+                    animation: `scale-in 0.25s cubic-bezier(0.34,1.56,.64,1) ${idx * 0.05}s both`,
                   }}>
-                    <div style={{ fontWeight: 600, fontSize: '0.85rem', color: 'hsl(var(--ink))', fontFamily: 'Inter, sans-serif', marginBottom: '4px' }}>
-                      {idx === 0 ? '★ Original (AI-generated)' : `Version ${v.version}`}
+                    <div style={{ fontWeight: 700, fontSize: '0.85rem', color: idx === 0 ? 'hsl(var(--ink))' : 'hsl(var(--ink))', fontFamily: 'Inter, sans-serif', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      {idx === 0 && <span style={{ fontSize: '.72rem', background: 'hsl(var(--sticky-yellow))', color: 'hsl(var(--ink))', padding: '.08rem .4rem', borderRadius: '4px', fontWeight: 700 }}>★ Original</span>}
+                      {idx === 0 ? 'AI Generated' : `Version ${v.version}`}
                     </div>
-                    <div style={{ fontSize: '0.76rem', color: 'hsl(var(--pencil))', fontFamily: 'Inter, sans-serif', marginBottom: '10px' }}>
+                    <div style={{ fontSize: '0.74rem', color: 'hsl(var(--pencil))', fontFamily: 'JetBrains Mono, monospace', marginBottom: '10px' }}>
                       {new Date(v.saved_at).toLocaleString()}
                     </div>
                     <button

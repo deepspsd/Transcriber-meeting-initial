@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
-import { Outlet, Navigate } from 'react-router-dom'
+import { Outlet, Navigate, useLocation } from 'react-router-dom'
+import { AnimatePresence, motion } from 'framer-motion'
 import Sidebar from '../components/Sidebar'
 import { useAuthStore } from '../store/auth'
 import { useUIStore } from '../store/ui'
@@ -9,6 +10,7 @@ export default function Dashboard() {
   const user = useAuthStore((s) => s.user)
   const collapsed = useUIStore((s) => s.sidebarCollapsed)
   const isProcessing = useProcessingStore((s) => s.isProcessing)
+  const location = useLocation()
 
   // ── Block browser back / forward while processing ──────────────────────────
   // Push a duplicate history entry so pressing "Back" stays on the same page.
@@ -57,12 +59,23 @@ export default function Dashboard() {
       <Sidebar />
       <div style={{
         height: '100vh',
-        overflow: 'hidden',
+        overflow: 'auto',
         display: 'flex',
         flexDirection: 'column',
         position: 'relative',
       }}>
-        <Outlet />
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={location.pathname}
+            initial={{ opacity: 0, scale: 0.975, y: 6 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.99 }}
+            transition={{ duration: 0.18, ease: [0.4, 0, 0.2, 1] }}
+            style={{ minHeight: '100%', display: 'flex', flexDirection: 'column' }}
+          >
+            <Outlet />
+          </motion.div>
+        </AnimatePresence>
       </div>
     </div>
   )

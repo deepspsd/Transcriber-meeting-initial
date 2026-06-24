@@ -287,18 +287,20 @@ export default function RecordPage() {
             )}
 
             {overlapAlert && (
-              <div className="animate-shake" style={{
-                display: 'flex', alignItems: 'center', gap: '8px',
-                padding: '.45rem 1rem',
-                background: 'hsl(var(--destructive) / .1)',
-                border: '1.5px solid hsl(var(--destructive) / .4)',
-                borderRadius: '999px',
-                fontSize: '.82rem', fontWeight: 600,
+              <div className="animate-slide-up" style={{
+                display: 'flex', alignItems: 'center', gap: '10px',
+                padding: '.6rem 1.25rem',
+                background: 'hsl(var(--destructive) / .12)',
+                border: '1.5px solid hsl(var(--destructive) / .45)',
+                borderRadius: '12px',
+                fontSize: '.84rem', fontWeight: 600,
                 color: 'hsl(var(--destructive))',
                 fontFamily: 'Inter, sans-serif',
+                maxWidth: '400px',
+                boxShadow: '0 0 16px hsl(var(--destructive) / .12)',
               }}>
-                <AlertTriangle size={14} />
-                Cross-talk detected — please speak one at a time
+                <AlertTriangle size={16} style={{ flexShrink: 0 }} />
+                <span>⚠️ Cross-talk detected — please speak one at a time</span>
               </div>
             )}
 
@@ -339,7 +341,12 @@ export default function RecordPage() {
                 onClick={handleStop}
                 id="main-stop-btn"
                 title="Stop recording"
+                style={{ position: 'relative' }}
               >
+                {/* Pulsing concentric rings */}
+                <span className="record-ring-1" style={{ position: 'absolute', inset: '-18px', borderRadius: '50%', border: '2px solid hsl(var(--destructive) / .3)', animation: 'recording-ring-pulse 2.4s ease-out infinite', animationDelay: '0s' }} />
+                <span className="record-ring-2" style={{ position: 'absolute', inset: '-34px', borderRadius: '50%', border: '2px solid hsl(var(--destructive) / .2)', animation: 'recording-ring-pulse 2.4s ease-out infinite', animationDelay: '0.55s' }} />
+                <span className="record-ring-3" style={{ position: 'absolute', inset: '-50px', borderRadius: '50%', border: '2px solid hsl(var(--destructive) / .1)', animation: 'recording-ring-pulse 2.4s ease-out infinite', animationDelay: '1.1s' }} />
                 <Square size={32} color="hsl(var(--accent-foreground))" fill="hsl(var(--accent-foreground))" />
               </button>
             )}
@@ -390,26 +397,21 @@ export default function RecordPage() {
           background: 'hsl(var(--paper) / .4)'
         }}>
           {result?.transcript?.length > 0 && (
-            <div className="animate-slide-up" style={{ marginBottom: '.75rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <h3 style={{
-                fontSize: '1rem',
-                fontWeight: 700,
-                color: 'hsl(var(--ink))',
-                fontFamily: 'Inter, sans-serif',
-                letterSpacing: '-.01em'
-              }}>
-                Transcript
-              </h3>
-              <span style={{
-                fontSize: '.72rem', fontWeight: 600,
-                color: 'hsl(var(--pencil))',
-                background: 'hsl(var(--muted))',
-                padding: '.15rem .5rem',
-                borderRadius: '999px',
-                fontFamily: 'Inter, sans-serif'
-              }}>
-                {result.transcript.length} segments
-              </span>
+            <div className="transcript-subheader animate-slide-up">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'hsl(var(--ink))', fontFamily: 'Inter, sans-serif', letterSpacing: '-.01em', margin: 0 }}>
+                  Transcript
+                </h3>
+                <span style={{ fontSize: '.72rem', fontWeight: 600, color: 'hsl(var(--pencil))', background: 'hsl(var(--muted))', padding: '.15rem .5rem', borderRadius: '999px', fontFamily: 'Inter, sans-serif' }}>
+                  {result.transcript.length} segments
+                </span>
+              </div>
+              <div className="confidence-legend">
+                <span style={{ color: 'hsl(var(--pencil))', fontWeight: 600, fontSize: '.68rem', textTransform: 'uppercase', letterSpacing: '.06em' }}>Confidence:</span>
+                <span className="confidence-legend-item"><span className="conf-dot" style={{ background: 'hsl(var(--sticky-green))' }} />High</span>
+                <span className="confidence-legend-item"><span className="conf-dot" style={{ background: 'hsl(45,90%,50%)' }} />Mid</span>
+                <span className="confidence-legend-item"><span className="conf-dot" style={{ background: 'hsl(var(--destructive))' }} />Low</span>
+              </div>
             </div>
           )}
           <TranscriptViewer segments={result?.transcript || []} />

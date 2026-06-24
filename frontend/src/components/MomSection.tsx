@@ -6,13 +6,14 @@ interface MomSectionProps {
   children: React.ReactNode
   defaultOpen?: boolean
   headerRight?: React.ReactNode
+  className?: string
 }
 
-export default function MomSection({ title, children, defaultOpen = true, headerRight }: MomSectionProps) {
+export default function MomSection({ title, children, defaultOpen = true, headerRight, className }: MomSectionProps) {
   const [open, setOpen] = useState(defaultOpen)
 
   return (
-    <div style={{
+    <div className={className} style={{
       background: 'hsl(var(--card))',
       borderRadius: '12px',
       border: '1px solid hsl(var(--border) / .5)',

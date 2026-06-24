@@ -74,7 +74,7 @@ export default function SettingsPage() {
   ]
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100%' }}>
 
       {/* Panel Header */}
       <div className="panel-header">
@@ -153,30 +153,55 @@ export default function SettingsPage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             {profiles.map((p, idx) => {
               const color = PROFILE_COLORS[idx % PROFILE_COLORS.length]
+              const sampleDots = Math.min(p.sample_count, 10)
               return (
                 <div
                   key={p.id}
-                  className="animate-slide-up"
+                  className="animate-slide-up sketch-border"
                   style={{
                     display: 'flex', alignItems: 'center', gap: '16px',
                     padding: '1.1rem 1.25rem',
                     background: 'hsl(var(--card))',
-                    border: '1.5px solid hsl(var(--ink) / .1)',
                     borderLeft: `4px solid ${color}`,
-                    borderRadius: '0 10px 10px 0',
+                    borderRadius: '0 12px 12px 0',
                     animationDelay: `${0.1 + idx * 0.04}s`,
-                    animationFillMode: 'both'
+                    animationFillMode: 'both',
+                    transition: 'box-shadow .2s, transform .2s',
+                  }}
+                  onMouseEnter={e => {
+                    const el = e.currentTarget as HTMLDivElement
+                    el.style.boxShadow = `4px 4px 0 ${color}25, 0 4px 16px ${color}15`
+                    el.style.transform = 'translateX(2px)'
+                  }}
+                  onMouseLeave={e => {
+                    const el = e.currentTarget as HTMLDivElement
+                    el.style.boxShadow = 'none'
+                    el.style.transform = 'none'
                   }}
                 >
-                  {/* Avatar */}
-                  <div style={{
-                    width: '44px', height: '44px', borderRadius: '50%',
-                    background: `${color}1a`,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    color, fontWeight: 700, fontSize: '1.1rem', flexShrink: 0,
-                    border: `2px solid ${color}40`,
-                    fontFamily: 'Inter, sans-serif'
-                  }}>
+                  {/* Avatar with hover glow */}
+                  <div
+                    style={{
+                      width: '48px', height: '48px', borderRadius: '50%',
+                      background: `${color}20`,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      color, fontWeight: 800, fontSize: '1.2rem', flexShrink: 0,
+                      border: `2px solid ${color}50`,
+                      fontFamily: 'Inter, sans-serif',
+                      transition: 'transform .3s cubic-bezier(0.34,1.56,.64,1), box-shadow .3s',
+                      cursor: 'default',
+                    }}
+                    onMouseEnter={e => {
+                      const el = e.currentTarget as HTMLDivElement
+                      el.style.transform = 'rotate(8deg) scale(1.08)'
+                      el.style.boxShadow = `0 0 16px ${color}55`
+                    }}
+                    onMouseLeave={e => {
+                      const el = e.currentTarget as HTMLDivElement
+                      el.style.transform = 'none'
+                      el.style.boxShadow = 'none'
+                    }}
+                  >
                     {p.label[0]?.toUpperCase()}
                   </div>
 
@@ -192,7 +217,7 @@ export default function SettingsPage() {
                         autoFocus
                       />
                     ) : (
-                      <div style={{ fontWeight: 600, fontSize: '1rem', fontFamily: 'Inter, sans-serif', color: 'hsl(var(--ink))', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <div style={{ fontWeight: 700, fontSize: '1rem', fontFamily: 'Inter, sans-serif', color: 'hsl(var(--ink))', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                         {p.label}
                         {p.is_self && (
                           <span style={{
@@ -208,8 +233,17 @@ export default function SettingsPage() {
                         )}
                       </div>
                     )}
-                    <div style={{ fontSize: '0.8rem', color: 'hsl(var(--pencil))', fontFamily: 'Inter, sans-serif' }}>
-                      {p.sample_count} sample{p.sample_count !== 1 ? 's' : ''} · {new Date(p.created_at).toLocaleDateString()}
+                    {/* Sample count as dots */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <div style={{ display: 'flex', gap: '3px', alignItems: 'center' }}>
+                        {Array.from({ length: sampleDots }).map((_, i) => (
+                          <span key={i} style={{ width: '7px', height: '7px', borderRadius: '50%', background: color, opacity: 0.65 + (i / sampleDots) * 0.35 }} />
+                        ))}
+                        {p.sample_count > 10 && <span style={{ fontSize: '.68rem', color: 'hsl(var(--pencil))', fontFamily: 'Inter, sans-serif' }}>+{p.sample_count - 10}</span>}
+                      </div>
+                      <span style={{ fontSize: '0.76rem', color: 'hsl(var(--pencil))', fontFamily: 'Inter, sans-serif' }}>
+                        {p.sample_count} sample{p.sample_count !== 1 ? 's' : ''} · {new Date(p.created_at).toLocaleDateString()}
+                      </span>
                     </div>
                   </div>
 
@@ -236,10 +270,12 @@ export default function SettingsPage() {
                     )}
                     <button
                       className="icon-btn"
-                      style={{ width: '36px', height: '36px', color: 'hsl(var(--destructive))' }}
+                      style={{ width: '36px', height: '36px', color: 'hsl(var(--destructive) / .7)', transition: 'color .15s' }}
                       onClick={() => handleDelete(p.id)}
                       disabled={deletingId === p.id}
                       title="Delete"
+                      onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.color = 'hsl(var(--destructive))'}
+                      onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.color = 'hsl(var(--destructive) / .7)'}
                     >
                       {deletingId === p.id ? <Loader size={14} className="spin" /> : <Trash2 size={14} />}
                     </button>
