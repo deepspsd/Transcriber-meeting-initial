@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { History as HistoryIcon, Clock, Users, Mic, Loader, Trash2, ChevronRight, Search } from 'lucide-react'
 import api from '../api/client'
+import InlineEdit from '../components/InlineEdit'
 
 interface HistoryItem {
   id: string
@@ -57,6 +58,11 @@ export default function HistoryPage() {
     } finally {
       setDeletingId(null)
     }
+  }
+
+  const handleRename = async (id: string, newName: string) => {
+    await api.patch(`/history/${id}/rename`, { filename: newName })
+    setItems((prev) => prev.map((i) => i.id === id ? { ...i, filename: newName } : i))
   }
 
   const filtered = query.trim()
@@ -196,10 +202,17 @@ export default function HistoryPage() {
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{
                   fontWeight: 600, fontSize: '0.93rem',
-                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                  overflow: 'hidden',
                   marginBottom: '5px', color: 'hsl(var(--ink))', fontFamily: 'Inter, sans-serif'
                 }}>
-                  {item.filename}
+                  {/* Stop propagation so clicking the name doesn't navigate to detail */}
+                  <div onClick={e => e.stopPropagation()}>
+                    <InlineEdit
+                      value={item.filename}
+                      onSave={(name) => handleRename(item.id, name)}
+                      textStyle={{ fontWeight: 600, fontSize: '0.93rem', fontFamily: 'Inter, sans-serif', color: 'hsl(var(--ink))' }}
+                    />
+                  </div>
                 </div>
                 <div style={{
                   display: 'flex', flexWrap: 'wrap', gap: '10px',

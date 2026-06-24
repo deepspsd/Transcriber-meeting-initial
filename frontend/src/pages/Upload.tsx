@@ -4,6 +4,7 @@ import { useJobPoller } from '../hooks/useJobPoller'
 import TranscriptViewer from '../components/TranscriptViewer'
 import AIChatPanel from '../components/AIChatPanel'
 import ProcessingOverlay from '../components/ProcessingOverlay'
+import PDFButton from '../components/PDFButton'
 import { useProcessingStore } from '../store/processing'
 import api from '../api/client'
 
@@ -114,13 +115,20 @@ export default function UploadPage() {
             </p>
           </div>
           {result && (
-            <button
-              className="btn btn-ghost animate-bounce-in"
-              onClick={() => { setFile(null); setRecordingId(null); setResult(null); setError('') }}
-              style={{ flexShrink: 0, fontSize: '.82rem', padding: '.4rem .85rem' }}
-            >
-              <RotateCcw size={14} /> New Upload
-            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+              <PDFButton
+                recordingId={recordingId}
+                filename={file?.name}
+                variant="ghost"
+              />
+              <button
+                className="btn btn-ghost animate-bounce-in"
+                onClick={() => { setFile(null); setRecordingId(null); setResult(null); setError('') }}
+                style={{ flexShrink: 0, fontSize: '.82rem', padding: '.4rem .85rem' }}
+              >
+                <RotateCcw size={14} /> New Upload
+              </button>
+            </div>
           )}
         </div>
 

@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import {
   Mic, Upload, History, UserPlus, Settings,
@@ -7,6 +8,7 @@ import {
 import { useAuthStore } from '../store/auth'
 import { useUIStore } from '../store/ui'
 import { useProcessingStore } from '../store/processing'
+import api from '../api/client'
 
 const NAV = [
   { to: '/dashboard', icon: Mic, label: 'Record', end: true },
@@ -25,6 +27,21 @@ export default function Sidebar() {
   const { theme, sidebarCollapsed: collapsed, toggleTheme, toggleSidebar } = useUIStore()
   const { isProcessing, stage } = useProcessingStore()
   const navigate = useNavigate()
+  const [loggingOut, setLoggingOut] = useState(false)
+
+  const handleLogout = async () => {
+    if (isProcessing || loggingOut) return
+    setLoggingOut(true)
+    try {
+      // Revoke session server-side (clears HttpOnly cookie)
+      await api.post('/auth/logout')
+    } catch {
+      // Even if the request fails, clear local state
+    } finally {
+      logout()
+      navigate('/login')
+    }
+  }
 
   const tip = (label: string) => collapsed ? label : undefined
   const avatarLetter = user?.name?.charAt(0).toUpperCase() ?? '?'
@@ -246,12 +263,14 @@ export default function Sidebar() {
         <button
           className={`nav-item ${isProcessing ? 'nav-locked' : ''}`}
           style={{ color: 'hsl(var(--destructive))', margin: '2px 0' }}
-          onClick={isProcessing ? undefined : () => { logout(); navigate('/login') }}
+          onClick={handleLogout}
           title={isProcessing ? 'Cannot log out while processing' : tip('Logout')}
-          disabled={isProcessing}
+          disabled={isProcessing || loggingOut}
         >
-          <LogOut size={16} className="nav-icon" />
-          {!collapsed && <span className="nav-label">Logout</span>}
+          {loggingOut
+            ? <Loader size={16} className="spin nav-icon" />
+            : <LogOut size={16} className="nav-icon" />}
+          {!collapsed && <span className="nav-label">{loggingOut ? 'Signing out…' : 'Logout'}</span>}
         </button>
       </div>
     </aside>

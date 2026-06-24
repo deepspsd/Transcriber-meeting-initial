@@ -23,6 +23,8 @@ from routers.audio import router as audio_router
 from routers.history import router as history_router
 from routers.settings_router import router as settings_router
 from routers.chat import router as chat_router
+from routers.pdf_router import router as pdf_router
+from routers.mom_router import router as mom_router
 from services.record import OverlapModel
 
 logging.basicConfig(
@@ -111,6 +113,8 @@ app.include_router(audio_router)
 app.include_router(history_router)
 app.include_router(settings_router)
 app.include_router(chat_router)
+app.include_router(pdf_router)
+app.include_router(mom_router)
 
 # ── Serve uploaded audio files ────────────────────────────────
 if os.path.exists(settings.UPLOAD_DIR):

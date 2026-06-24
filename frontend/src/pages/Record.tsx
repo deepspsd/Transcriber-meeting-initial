@@ -6,6 +6,7 @@ import WaveformVisualizer from '../components/WaveformVisualizer'
 import TranscriptViewer from '../components/TranscriptViewer'
 import AIChatPanel from '../components/AIChatPanel'
 import ProcessingOverlay from '../components/ProcessingOverlay'
+import PDFButton from '../components/PDFButton'
 import { useProcessingStore } from '../store/processing'
 import api from '../api/client'
 
@@ -203,13 +204,20 @@ export default function RecordPage() {
           )}
 
           {result && (
-            <button
-              className="btn btn-ghost animate-bounce-in"
-              onClick={handleReset}
-              style={{ flexShrink: 0, fontSize: '.82rem', padding: '.4rem .85rem' }}
-            >
-              <RotateCcw size={14} /> New Recording
-            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+              <PDFButton
+                recordingId={recordingId}
+                filename="recording"
+                variant="ghost"
+              />
+              <button
+                className="btn btn-ghost animate-bounce-in"
+                onClick={handleReset}
+                style={{ flexShrink: 0, fontSize: '.82rem', padding: '.4rem .85rem' }}
+              >
+                <RotateCcw size={14} /> New Recording
+              </button>
+            </div>
           )}
         </div>
 

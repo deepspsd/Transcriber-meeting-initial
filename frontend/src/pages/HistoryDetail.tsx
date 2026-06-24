@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Loader, Clock, Users, FileAudio } from 'lucide-react'
+import { ArrowLeft, Loader, Clock, Users, FileAudio, FileText } from 'lucide-react'
 import TranscriptViewer from '../components/TranscriptViewer'
 import AIChatPanel from '../components/AIChatPanel'
+import PDFButton from '../components/PDFButton'
+import InlineEdit from '../components/InlineEdit'
 import api from '../api/client'
 
 function fmtDuration(s: number) {
@@ -18,6 +20,11 @@ export default function HistoryDetail() {
   const [chatOpen, setChatOpen] = useState(true)
   const [audioUrl, setAudioUrl] = useState<string | null>(null)
   const navigate = useNavigate()
+
+  const handleRename = async (newName: string) => {
+    await api.patch(`/history/${id}/rename`, { filename: newName })
+    setRec((prev: any) => ({ ...prev, filename: newName }))
+  }
 
   useEffect(() => {
     if (!id) return
@@ -77,11 +84,15 @@ export default function HistoryDetail() {
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{
               fontWeight: 700, fontSize: '1rem',
-              overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+              overflow: 'hidden',
               fontFamily: 'Inter, sans-serif', color: 'hsl(var(--ink))',
               marginBottom: '4px'
             }}>
-              {rec.filename}
+              <InlineEdit
+                value={rec.filename}
+                onSave={handleRename}
+                textStyle={{ fontWeight: 700, fontSize: '1rem', fontFamily: 'Inter, sans-serif', color: 'hsl(var(--ink))' }}
+              />
             </div>
             <div style={{
               display: 'flex', gap: '10px', flexWrap: 'wrap',
@@ -113,6 +124,25 @@ export default function HistoryDetail() {
                 borderRadius: '8px', flexShrink: 0, minWidth: '180px', maxWidth: '260px'
               }}
             />
+          )}
+
+          {/* Actions */}
+          {rec?.status === 'done' && (
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+              <button
+                className="btn btn-ghost"
+                onClick={() => navigate(`/dashboard/history/${id}/mom`)}
+                style={{ height: '36px', fontSize: '.82rem', padding: '0 1rem', gap: '6px' }}
+              >
+                <FileText size={14} />
+                <span>Minutes of Meeting</span>
+              </button>
+              <PDFButton
+                recordingId={id}
+                filename={rec.filename}
+                variant="ghost"
+              />
+            </div>
           )}
         </div>
 

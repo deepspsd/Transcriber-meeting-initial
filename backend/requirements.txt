@@ -24,3 +24,5 @@ pyannote.audio
 bcrypt==3.2.2
 # Speaker embedding - install separately if needed
 # resemblyzer==0.1.1.dev0
+# PDF generation
+reportlab>=4.0.0

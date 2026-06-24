@@ -1,11 +1,40 @@
 """History router — list, view, and delete recordings."""
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Body
 from bson import ObjectId
 from database import get_db
 from routers.auth import get_current_user
 from utils.storage import delete_file
 
 router = APIRouter(prefix="/history", tags=["history"])
+
+
+@router.patch("/{recording_id}/rename")
+async def rename_recording(
+    recording_id: str,
+    filename: str = Body(..., embed=True),
+    current_user: dict = Depends(get_current_user),
+):
+    """Rename a recording. Validates the new name and updates in DB."""
+    name = filename.strip()
+    if not name:
+        raise HTTPException(status_code=422, detail="Name cannot be empty.")
+    if len(name) > 200:
+        raise HTTPException(status_code=422, detail="Name too long (max 200 chars).")
+
+    user_id = str(current_user["_id"])
+    db = get_db()
+    try:
+        result = await db.recordings.update_one(
+            {"_id": ObjectId(recording_id), "user_id": user_id},
+            {"$set": {"filename": name}},
+        )
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid recording ID.")
+
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Recording not found.")
+
+    return {"id": recording_id, "filename": name}
 
 
 @router.get("")

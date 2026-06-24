@@ -7,10 +7,21 @@ class Settings(BaseSettings):
     MONGODB_URI: str = "mongodb://localhost:27017"
     MONGODB_DB: str = "voicesum"
 
-    # JWT
+    # JWT — Access token (short-lived, in-memory on client)
     JWT_SECRET: str = "change-me-in-production-use-long-random-string"
     JWT_ALGORITHM: str = "HS256"
-    JWT_EXPIRE_MINUTES: int = 60 * 24 * 7  # 7 days
+    JWT_EXPIRE_MINUTES: int = 15  # 15 minutes — refresh token extends session
+
+    # Refresh token (long-lived, HttpOnly cookie)
+    REFRESH_TOKEN_EXPIRE_DAYS: int = 30
+
+    # Environment ("development" | "production") — controls Secure cookie flag
+    ENVIRONMENT: str = "development"
+
+    # Rate limiting — login endpoint
+    RATE_LIMIT_LOGIN_MAX: int = 5          # max failed attempts
+    RATE_LIMIT_LOGIN_WINDOW_SECONDS: int = 300  # 5-minute window
+    ACCOUNT_LOCKOUT_SECONDS: int = 900     # 15-minute lockout after max attempts
 
     # Groq LLM
     GROQ_API_KEY: str = ""
