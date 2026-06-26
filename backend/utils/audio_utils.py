@@ -57,7 +57,9 @@ def validate_audio(file_path: str) -> Tuple[bool, str]:
 
 def convert_to_wav(input_path: str, output_path: str, sr: int = 16000) -> str:
     """Convert any audio format to 16kHz mono WAV."""
-    audio, _ = librosa.load(input_path, sr=sr, mono=True)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        audio, _ = librosa.load(input_path, sr=sr, mono=True)
     sf.write(output_path, audio, sr, subtype="PCM_16")
     return output_path
 

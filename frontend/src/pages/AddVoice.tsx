@@ -216,6 +216,7 @@ export default function AddVoicePage() {
             </p>
           </div>
           <VoiceRecorder
+            key={step}
             sampleIndex={step}
             label={label || 'speaker'}
             onSampleSaved={handleSampleSaved}
